@@ -12,16 +12,18 @@ const Index = () => {
   const [tests, setTests] = useState<any[]>([]);
   const [testResults, setTestResults] = useState<any[]>([]);
   const [resources, setResources] = useState<any[]>([]);
+  const [dataLoading, setDataLoading] = useState(false);
 
   // Fetch tests from Supabase
   useEffect(() => {
-    if (user) {
+    if (user && profile) {
       fetchTests();
       fetchTestResults();
     }
-  }, [user]);
+  }, [user, profile]);
 
   const fetchTests = async () => {
+    setDataLoading(true);
     try {
       const { data, error } = await supabase
         .from('tests')
@@ -31,12 +33,24 @@ const Index = () => {
 
       if (error) {
         console.error('Error fetching tests:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load tests",
+          variant: "destructive"
+        });
         return;
       }
 
       setTests(data || []);
     } catch (error) {
       console.error('Error fetching tests:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load tests",
+        variant: "destructive"
+      });
+    } finally {
+      setDataLoading(false);
     }
   };
 
@@ -44,10 +58,17 @@ const Index = () => {
     if (!user) return;
 
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('test_results')
         .select('*')
         .order('completed_at', { ascending: false });
+
+      // If student, only fetch their results
+      if (profile?.user_type === 'student') {
+        query = query.eq('student_id', user.id);
+      }
+
+      const { data, error } = await query;
 
       if (error) {
         console.error('Error fetching test results:', error);
@@ -167,8 +188,11 @@ const Index = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="text-lg text-gray-600">Loading...</div>
+        </div>
       </div>
     );
   }
@@ -195,7 +219,7 @@ const Index = () => {
       onLogout={handleLogout}
       tests={tests}
       onSubmitTest={handleSubmitTest}
-      studentResults={testResults.filter(result => result.student_id === user.id)}
+      studentResults={testResults}
       resources={resources}
       studentId={profile.student_id || user.id}
     />
