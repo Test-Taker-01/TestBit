@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,9 +9,10 @@ interface FullScreenTestInterfaceProps {
   test: any;
   onSubmit: (answers: any[]) => void;
   onBack: () => void;
+  studentName?: string;
 }
 
-const FullScreenTestInterface: React.FC<FullScreenTestInterfaceProps> = ({ test, onSubmit, onBack }) => {
+const FullScreenTestInterface: React.FC<FullScreenTestInterfaceProps> = ({ test, onSubmit, onBack, studentName }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<number[]>(new Array(test.questions.length).fill(-1));
   const [timeLeft, setTimeLeft] = useState(test.duration * 60);
@@ -41,6 +41,10 @@ const FullScreenTestInterface: React.FC<FullScreenTestInterfaceProps> = ({ test,
   }, []);
 
   useEffect(() => {
+    // Force light mode by adding light class to body
+    document.body.classList.add('light');
+    document.body.classList.remove('dark');
+    
     // Enter fullscreen when component mounts
     enterFullScreen();
 
@@ -84,6 +88,9 @@ const FullScreenTestInterface: React.FC<FullScreenTestInterfaceProps> = ({ test,
     window.addEventListener('beforeunload', handleBeforeUnload);
 
     return () => {
+      // Restore original theme when component unmounts
+      document.body.classList.remove('light');
+      
       document.removeEventListener('fullscreenchange', handleFullScreenChange);
       document.removeEventListener('webkitfullscreenchange', handleFullScreenChange);
       document.removeEventListener('mozfullscreenchange', handleFullScreenChange);
@@ -179,9 +186,9 @@ const FullScreenTestInterface: React.FC<FullScreenTestInterfaceProps> = ({ test,
   const answeredCount = answers.filter(a => a !== -1).length;
 
   return (
-    <div ref={containerRef} className="min-h-screen bg-gray-900 text-white p-4">
+    <div ref={containerRef} className="min-h-screen bg-white text-gray-900 p-4">
       <AlertDialog open={showExitWarning} onOpenChange={setShowExitWarning}>
-        <AlertDialogContent>
+        <AlertDialogContent className="bg-white">
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
               <AlertTriangle className="text-yellow-500" size={20} />
@@ -209,17 +216,17 @@ const FullScreenTestInterface: React.FC<FullScreenTestInterfaceProps> = ({ test,
                 onBack();
               }} 
               variant="outline" 
-              className="flex items-center gap-2 text-white border-gray-600 hover:bg-gray-800"
+              className="flex items-center gap-2"
             >
               <ArrowLeft size={16} />
               Exit Test
             </Button>
-            <div className="text-yellow-400 text-sm">
+            <div className="text-yellow-600 text-sm">
               {exitAttempts > 0 && `Exit attempts: ${exitAttempts}/2`}
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 text-red-400">
+            <div className="flex items-center gap-2 text-red-600">
               <Clock size={16} />
               <span className="font-mono font-bold text-lg">{formatTime(timeLeft)}</span>
             </div>
@@ -229,11 +236,16 @@ const FullScreenTestInterface: React.FC<FullScreenTestInterfaceProps> = ({ test,
           </div>
         </div>
 
-        <Card className="bg-gray-800 border-gray-700">
+        <Card className="bg-white border-gray-200">
           <CardHeader>
             <div className="flex justify-between items-center">
-              <CardTitle className="text-white">{test.title}</CardTitle>
-              <span className="text-sm text-gray-400">
+              <div>
+                <CardTitle className="text-gray-900">{test.title}</CardTitle>
+                {studentName && (
+                  <p className="text-sm text-gray-600 mt-1">Student: {studentName}</p>
+                )}
+              </div>
+              <span className="text-sm text-gray-600">
                 Question {currentQuestionIndex + 1} of {test.questions.length}
               </span>
             </div>
@@ -243,17 +255,17 @@ const FullScreenTestInterface: React.FC<FullScreenTestInterfaceProps> = ({ test,
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           <div className="lg:col-span-3">
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-white border-gray-200">
               <CardHeader>
                 <div className="flex justify-between items-start">
-                  <CardTitle className="text-lg text-white">
+                  <CardTitle className="text-lg text-gray-900">
                     Q{currentQuestionIndex + 1}. {currentQuestion.question}
                   </CardTitle>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={toggleFlag}
-                    className={flagged[currentQuestionIndex] ? 'text-red-400' : 'text-gray-500'}
+                    className={flagged[currentQuestionIndex] ? 'text-red-600' : 'text-gray-500'}
                   >
                     <Flag size={16} />
                   </Button>
@@ -276,8 +288,8 @@ const FullScreenTestInterface: React.FC<FullScreenTestInterfaceProps> = ({ test,
                       key={index}
                       className={`w-full p-4 text-left border rounded-lg transition-colors ${
                         answers[currentQuestionIndex] === index
-                          ? 'border-blue-400 bg-blue-900/50 text-white'
-                          : 'border-gray-600 hover:border-gray-500 bg-gray-800 text-gray-300'
+                          ? 'border-blue-500 bg-blue-50 text-gray-900'
+                          : 'border-gray-300 hover:border-gray-400 bg-white text-gray-700'
                       }`}
                       onClick={() => handleAnswerSelect(index)}
                     >
@@ -285,15 +297,15 @@ const FullScreenTestInterface: React.FC<FullScreenTestInterfaceProps> = ({ test,
                         <div
                           className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
                             answers[currentQuestionIndex] === index
-                              ? 'border-blue-400 bg-blue-400'
-                              : 'border-gray-500'
+                              ? 'border-blue-500 bg-blue-500'
+                              : 'border-gray-400'
                           }`}
                         >
                           {answers[currentQuestionIndex] === index && (
                             <div className="w-2 h-2 bg-white rounded-full" />
                           )}
                         </div>
-                        <span className="font-medium text-gray-300">
+                        <span className="font-medium text-gray-700">
                           {String.fromCharCode(65 + index)}.
                         </span>
                         <span>{option}</span>
@@ -307,7 +319,7 @@ const FullScreenTestInterface: React.FC<FullScreenTestInterfaceProps> = ({ test,
                     variant="outline"
                     onClick={() => setCurrentQuestionIndex(Math.max(0, currentQuestionIndex - 1))}
                     disabled={currentQuestionIndex === 0}
-                    className="flex items-center gap-2 text-white border-gray-600 hover:bg-gray-700"
+                    className="flex items-center gap-2"
                   >
                     <ArrowLeft size={16} />
                     Previous
@@ -326,12 +338,12 @@ const FullScreenTestInterface: React.FC<FullScreenTestInterfaceProps> = ({ test,
           </div>
 
           <div className="space-y-4">
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-white border-gray-200">
               <CardHeader>
-                <CardTitle className="text-lg text-white">Progress</CardTitle>
+                <CardTitle className="text-lg text-gray-900">Progress</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2 text-gray-300">
+                <div className="space-y-2 text-gray-700">
                   <div className="flex justify-between text-sm">
                     <span>Answered:</span>
                     <span>{answeredCount}/{test.questions.length}</span>
@@ -344,9 +356,9 @@ const FullScreenTestInterface: React.FC<FullScreenTestInterfaceProps> = ({ test,
               </CardContent>
             </Card>
 
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-white border-gray-200">
               <CardHeader>
-                <CardTitle className="text-lg text-white">Question Navigator</CardTitle>
+                <CardTitle className="text-lg text-gray-900">Question Navigator</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-5 gap-2">
@@ -360,7 +372,7 @@ const FullScreenTestInterface: React.FC<FullScreenTestInterfaceProps> = ({ test,
                           ? 'bg-green-600 text-white'
                           : flagged[index]
                           ? 'bg-red-600 text-white'
-                          : 'bg-gray-600 text-gray-300 hover:bg-gray-500'
+                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                       }`}
                       onClick={() => setCurrentQuestionIndex(index)}
                     >

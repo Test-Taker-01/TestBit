@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import LoginForm from '@/components/LoginForm';
 import AdminDashboard from '@/components/AdminDashboard';
@@ -181,7 +180,7 @@ const Index = () => {
 
       // Update local state
       setTests(tests.filter(test => test.id !== testId));
-      setTestResults(testResults.filter(result => result.testId !== testId));
+      setTestResults(testResults.filter(result => result.test_id !== testId));
       
       toast({
         title: "Test Deleted",
@@ -293,6 +292,7 @@ const Index = () => {
       studentResults={testResults}
       resources={resources}
       studentId={profile.student_id || user.id}
+      studentName={profile.name}
     />
   );
 };
