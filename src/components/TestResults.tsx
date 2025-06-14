@@ -1,24 +1,33 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Download, Eye, BarChart } from 'lucide-react';
+import { Download, Eye, BarChart, Trash2 } from 'lucide-react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import DetailedTestResult from './DetailedTestResult';
 
 interface TestResultsProps {
   testResults: any[];
   tests: any[];
+  profiles: any[];
+  onDeleteTest?: (testId: string) => void;
 }
 
-const TestResults: React.FC<TestResultsProps> = ({ testResults, tests }) => {
+const TestResults: React.FC<TestResultsProps> = ({ testResults, tests, profiles = [], onDeleteTest }) => {
+  const [selectedResult, setSelectedResult] = useState<any>(null);
+  const [selectedTest, setSelectedTest] = useState<any>(null);
+
   const exportToExcel = () => {
     const csvContent = [
-      ['Student ID', 'Test Title', 'Score', 'Total Questions', 'Correct Answers', 'Completion Date'].join(','),
+      ['Student Name', 'Student ID', 'Test Title', 'Score', 'Total Questions', 'Correct Answers', 'Completion Date'].join(','),
       ...testResults.map(result => {
         const test = tests.find(t => t.id === result.testId);
+        const profile = profiles.find(p => p.user_id === result.studentId);
         return [
-          result.studentId,
+          profile?.name || 'Unknown Student',
+          profile?.student_id || result.studentId,
           test?.title || 'Unknown Test',
           `${result.score}%`,
           result.totalQuestions,
@@ -50,6 +59,31 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests }) => {
   const passRate = testResults.length > 0 
     ? (testResults.filter(result => result.score >= 60).length / testResults.length) * 100 
     : 0;
+
+  const handleViewDetails = (result: any) => {
+    const test = tests.find(t => t.id === result.testId);
+    setSelectedResult(result);
+    setSelectedTest(test);
+  };
+
+  const getStudentName = (studentId: string) => {
+    const profile = profiles.find(p => p.user_id === studentId);
+    return profile?.name || 'Unknown Student';
+  };
+
+  if (selectedResult && selectedTest) {
+    return (
+      <DetailedTestResult
+        result={selectedResult}
+        test={selectedTest}
+        studentName={getStudentName(selectedResult.studentId)}
+        onBack={() => {
+          setSelectedResult(null);
+          setSelectedTest(null);
+        }}
+      />
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -110,7 +144,7 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests }) => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Student ID</TableHead>
+                  <TableHead>Student Name</TableHead>
                   <TableHead>Test</TableHead>
                   <TableHead>Score</TableHead>
                   <TableHead>Questions</TableHead>
@@ -122,9 +156,10 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests }) => {
               <TableBody>
                 {testResults.map((result, index) => {
                   const test = tests.find(t => t.id === result.testId);
+                  const studentName = getStudentName(result.studentId);
                   return (
                     <TableRow key={index}>
-                      <TableCell className="font-medium">{result.studentId}</TableCell>
+                      <TableCell className="font-medium">{studentName}</TableCell>
                       <TableCell>{test?.title || 'Unknown Test'}</TableCell>
                       <TableCell>
                         <Badge variant={getScoreBadgeVariant(result.score)}>
@@ -135,7 +170,11 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests }) => {
                       <TableCell>{result.correctAnswers}</TableCell>
                       <TableCell>{new Date(result.completedAt).toLocaleDateString()}</TableCell>
                       <TableCell>
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => handleViewDetails(result)}
+                        >
                           View Details
                         </Button>
                       </TableCell>
@@ -147,6 +186,57 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests }) => {
           )}
         </CardContent>
       </Card>
+
+      {onDeleteTest && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Manage Tests</CardTitle>
+            <CardDescription>Delete tests and their associated results</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {tests.map((test) => {
+                const testResultsCount = testResults.filter(result => result.testId === test.id).length;
+                return (
+                  <div key={test.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div>
+                      <h4 className="font-medium">{test.title}</h4>
+                      <p className="text-sm text-gray-600">
+                        {test.questions.length} questions • {testResultsCount} submissions
+                      </p>
+                    </div>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="destructive" size="sm" className="flex items-center gap-2">
+                          <Trash2 size={16} />
+                          Delete
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Test</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to delete "{test.title}"? This will also delete all associated test results. This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction 
+                            onClick={() => onDeleteTest(test.id)}
+                            className="bg-red-600 hover:bg-red-700"
+                          >
+                            Delete Test
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

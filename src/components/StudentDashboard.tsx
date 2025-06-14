@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Play, Clock, CheckCircle, BookOpen, LogOut, Award } from 'lucide-react';
-import TestInterface from './TestInterface';
+import FullScreenTestInterface from './FullScreenTestInterface';
 
 interface StudentDashboardProps {
   onLogout: () => void;
@@ -46,7 +46,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
 
       <div className="p-6">
         {selectedTest ? (
-          <TestInterface
+          <FullScreenTestInterface
             test={selectedTest}
             onSubmit={(answers) => {
               onSubmitTest(selectedTest.id, answers);
@@ -103,7 +103,12 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
                 {availableTests.length === 0 ? (
                   <Card>
                     <CardContent className="text-center py-8">
-                      <p className="text-gray-500">No tests available at the moment.</p>
+                      <p className="text-gray-500">
+                        {completedTestIds.length > 0 
+                          ? "You have completed all available tests. Great job!"
+                          : "No tests available at the moment."
+                        }
+                      </p>
                     </CardContent>
                   </Card>
                 ) : (

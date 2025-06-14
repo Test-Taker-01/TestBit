@@ -12,15 +12,34 @@ const Index = () => {
   const [tests, setTests] = useState<any[]>([]);
   const [testResults, setTestResults] = useState<any[]>([]);
   const [resources, setResources] = useState<any[]>([]);
+  const [profiles, setProfiles] = useState<any[]>([]);
   const [dataLoading, setDataLoading] = useState(false);
 
-  // Fetch tests from Supabase
+  // Fetch data when user and profile are available
   useEffect(() => {
     if (user && profile) {
       fetchTests();
       fetchTestResults();
+      fetchProfiles();
     }
   }, [user, profile]);
+
+  const fetchProfiles = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*');
+
+      if (error) {
+        console.error('Error fetching profiles:', error);
+        return;
+      }
+
+      setProfiles(data || []);
+    } catch (error) {
+      console.error('Error fetching profiles:', error);
+    }
+  };
 
   const fetchTests = async () => {
     setDataLoading(true);
@@ -128,6 +147,56 @@ const Index = () => {
     }
   };
 
+  const handleDeleteTest = async (testId: string) => {
+    try {
+      // First delete test results
+      const { error: resultError } = await supabase
+        .from('test_results')
+        .delete()
+        .eq('test_id', testId);
+
+      if (resultError) {
+        toast({
+          title: "Error",
+          description: "Failed to delete test results: " + resultError.message,
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Then delete the test
+      const { error: testError } = await supabase
+        .from('tests')
+        .delete()
+        .eq('id', testId);
+
+      if (testError) {
+        toast({
+          title: "Error",
+          description: "Failed to delete test: " + testError.message,
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Update local state
+      setTests(tests.filter(test => test.id !== testId));
+      setTestResults(testResults.filter(result => result.testId !== testId));
+      
+      toast({
+        title: "Test Deleted",
+        description: "Test and all associated results have been deleted",
+      });
+    } catch (error) {
+      console.error('Error deleting test:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete test",
+        variant: "destructive"
+      });
+    }
+  };
+
   const handleSubmitTest = async (testId: string, answers: any[]) => {
     if (!user) return;
 
@@ -210,6 +279,8 @@ const Index = () => {
         testResults={testResults}
         resources={resources}
         onAddResource={handleAddResource}
+        profiles={profiles}
+        onDeleteTest={handleDeleteTest}
       />
     );
   }
