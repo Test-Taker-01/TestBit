@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import * as SelectPrimitive from "@radix-ui/react-select"
 import { Check, ChevronDown, ChevronUp } from "lucide-react"
@@ -149,10 +150,10 @@ export {
   SelectGroup,
   SelectValue,
   SelectTrigger,
+  SelectScrollUpButton,
+  SelectScrollDownButton,
   SelectContent,
   SelectLabel,
   SelectItem,
   SelectSeparator,
-  SelectScrollUpButton,
-  SelectScrollDownButton,
 }
