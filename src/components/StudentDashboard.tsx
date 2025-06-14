@@ -113,7 +113,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
                         <CardHeader>
                           <CardTitle>{test.title}</CardTitle>
                           <CardDescription>
-                            {test.questions.length} questions • Duration: 30 minutes
+                            {test.questions.length} questions • Duration: {test.duration} minutes
                           </CardDescription>
                         </CardHeader>
                         <CardContent>

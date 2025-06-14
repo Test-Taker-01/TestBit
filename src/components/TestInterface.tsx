@@ -14,8 +14,13 @@ interface TestInterfaceProps {
 const TestInterface: React.FC<TestInterfaceProps> = ({ test, onSubmit, onBack }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<number[]>(new Array(test.questions.length).fill(-1));
-  const [timeLeft, setTimeLeft] = useState(30 * 60); // 30 minutes in seconds
+  const [timeLeft, setTimeLeft] = useState(test.duration * 60); // Use test duration in seconds
   const [flagged, setFlagged] = useState<boolean[]>(new Array(test.questions.length).fill(false));
+
+  useEffect(() => {
+    // Reset timer when test changes
+    setTimeLeft(test.duration * 60);
+  }, [test.duration]);
 
   useEffect(() => {
     const timer = setInterval(() => {
