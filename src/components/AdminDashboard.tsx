@@ -15,6 +15,8 @@ interface AdminDashboardProps {
   testResults: any[];
   resources: any[];
   onAddResource: (resource: any) => void;
+  profiles: any[];
+  onDeleteTest: (testId: string) => void;
 }
 
 const AdminDashboard: React.FC<AdminDashboardProps> = ({ 
@@ -23,7 +25,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   onCreateTest, 
   testResults,
   resources,
-  onAddResource 
+  onAddResource,
+  profiles,
+  onDeleteTest
 }) => {
   const [activeTab, setActiveTab] = useState('overview');
   const [showTestCreator, setShowTestCreator] = useState(false);
@@ -149,7 +153,12 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </TabsContent>
 
           <TabsContent value="results">
-            <TestResults testResults={testResults} tests={tests} />
+            <TestResults 
+              testResults={testResults} 
+              tests={tests} 
+              profiles={profiles}
+              onDeleteTest={onDeleteTest}
+            />
           </TabsContent>
 
           <TabsContent value="resources">
