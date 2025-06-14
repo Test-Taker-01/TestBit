@@ -5,16 +5,14 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { User, GraduationCap, Eye, EyeClosed } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
-interface LoginFormProps {
-  onLogin: (userType: 'admin' | 'student', credentials: { username: string; password: string }) => void;
-}
-
-const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
-  const [adminCredentials, setAdminCredentials] = useState({ username: '', password: '' });
-  const [studentCredentials, setStudentCredentials] = useState({ username: '', password: '' });
-  const [adminSignupData, setAdminSignupData] = useState({ name: '', username: '', password: '', confirmPassword: '', email: '' });
-  const [studentSignupData, setStudentSignupData] = useState({ name: '', username: '', password: '', confirmPassword: '', email: '' });
+const LoginForm: React.FC = () => {
+  const { signIn, signUp } = useAuth();
+  const [adminCredentials, setAdminCredentials] = useState({ email: '', password: '' });
+  const [studentCredentials, setStudentCredentials] = useState({ email: '', password: '' });
+  const [adminSignupData, setAdminSignupData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
+  const [studentSignupData, setStudentSignupData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
   const [isLoginMode, setIsLoginMode] = useState(true);
   
   // Password visibility states
@@ -25,34 +23,32 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
   const [showStudentSignupPassword, setShowStudentSignupPassword] = useState(false);
   const [showStudentSignupConfirmPassword, setShowStudentSignupConfirmPassword] = useState(false);
 
-  const handleAdminLogin = (e: React.FormEvent) => {
+  const handleAdminLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    onLogin('admin', adminCredentials);
+    await signIn(adminCredentials.email, adminCredentials.password);
   };
 
-  const handleStudentLogin = (e: React.FormEvent) => {
+  const handleStudentLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    onLogin('student', studentCredentials);
+    await signIn(studentCredentials.email, studentCredentials.password);
   };
 
-  const handleAdminSignup = (e: React.FormEvent) => {
+  const handleAdminSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (adminSignupData.password !== adminSignupData.confirmPassword) {
       alert('Passwords do not match');
       return;
     }
-    // For demo purposes, we'll treat signup as login
-    onLogin('admin', { username: adminSignupData.username, password: adminSignupData.password });
+    await signUp(adminSignupData.email, adminSignupData.password, adminSignupData.name, 'admin');
   };
 
-  const handleStudentSignup = (e: React.FormEvent) => {
+  const handleStudentSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (studentSignupData.password !== studentSignupData.confirmPassword) {
       alert('Passwords do not match');
       return;
     }
-    // For demo purposes, we'll treat signup as login
-    onLogin('student', { username: studentSignupData.username, password: studentSignupData.password });
+    await signUp(studentSignupData.email, studentSignupData.password, studentSignupData.name, 'student');
   };
 
   return (
@@ -107,12 +103,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
                 <TabsContent value="student">
                   <form onSubmit={handleStudentLogin} className="space-y-4">
                     <div>
-                      <label className="text-sm font-medium text-gray-700">Student ID</label>
+                      <label className="text-sm font-medium text-gray-700">Email</label>
                       <Input
-                        type="text"
-                        placeholder="Enter your student ID"
-                        value={studentCredentials.username}
-                        onChange={(e) => setStudentCredentials({...studentCredentials, username: e.target.value})}
+                        type="email"
+                        placeholder="Enter your email"
+                        value={studentCredentials.email}
+                        onChange={(e) => setStudentCredentials({...studentCredentials, email: e.target.value})}
                         required
                       />
                     </div>
@@ -144,12 +140,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
                 <TabsContent value="admin">
                   <form onSubmit={handleAdminLogin} className="space-y-4">
                     <div>
-                      <label className="text-sm font-medium text-gray-700">Teacher ID</label>
+                      <label className="text-sm font-medium text-gray-700">Email</label>
                       <Input
-                        type="text"
-                        placeholder="Enter your teacher ID"
-                        value={adminCredentials.username}
-                        onChange={(e) => setAdminCredentials({...adminCredentials, username: e.target.value})}
+                        type="email"
+                        placeholder="Enter your email"
+                        value={adminCredentials.email}
+                        onChange={(e) => setAdminCredentials({...adminCredentials, email: e.target.value})}
                         required
                       />
                     </div>
@@ -189,16 +185,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
                         placeholder="Enter your full name"
                         value={studentSignupData.name}
                         onChange={(e) => setStudentSignupData({...studentSignupData, name: e.target.value})}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-700">Student ID</label>
-                      <Input
-                        type="text"
-                        placeholder="Choose your student ID"
-                        value={studentSignupData.username}
-                        onChange={(e) => setStudentSignupData({...studentSignupData, username: e.target.value})}
                         required
                       />
                     </div>
@@ -265,16 +251,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
                         placeholder="Enter your full name"
                         value={adminSignupData.name}
                         onChange={(e) => setAdminSignupData({...adminSignupData, name: e.target.value})}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-700">Teacher ID</label>
-                      <Input
-                        type="text"
-                        placeholder="Choose your teacher ID"
-                        value={adminSignupData.username}
-                        onChange={(e) => setAdminSignupData({...adminSignupData, username: e.target.value})}
                         required
                       />
                     </div>

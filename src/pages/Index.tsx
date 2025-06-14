@@ -1,60 +1,115 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import LoginForm from '@/components/LoginForm';
 import AdminDashboard from '@/components/AdminDashboard';
 import StudentDashboard from '@/components/StudentDashboard';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
-interface User {
-  id: string;
-  type: 'admin' | 'student';
-  name: string;
-}
-
 const Index = () => {
-  const [user, setUser] = useState<User | null>(null);
+  const { user, profile, loading, signOut } = useAuth();
   const [tests, setTests] = useState<any[]>([]);
   const [testResults, setTestResults] = useState<any[]>([]);
   const [resources, setResources] = useState<any[]>([]);
 
-  const handleLogin = (userType: 'admin' | 'student', credentials: { username: string; password: string }) => {
-    // Simple demo authentication
-    if (credentials.username && credentials.password) {
-      setUser({
-        id: credentials.username,
-        type: userType,
-        name: userType === 'admin' ? 'Teacher' : 'Student'
-      });
+  // Fetch tests from Supabase
+  useEffect(() => {
+    if (user) {
+      fetchTests();
+      fetchTestResults();
+    }
+  }, [user]);
+
+  const fetchTests = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('tests')
+        .select('*')
+        .eq('is_published', true)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching tests:', error);
+        return;
+      }
+
+      setTests(data || []);
+    } catch (error) {
+      console.error('Error fetching tests:', error);
+    }
+  };
+
+  const fetchTestResults = async () => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('test_results')
+        .select('*')
+        .order('completed_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching test results:', error);
+        return;
+      }
+
+      setTestResults(data || []);
+    } catch (error) {
+      console.error('Error fetching test results:', error);
+    }
+  };
+
+  const handleLogout = async () => {
+    await signOut();
+  };
+
+  const handleCreateTest = async (test: any) => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('tests')
+        .insert([
+          {
+            title: test.title,
+            subject: test.subject,
+            duration: test.duration,
+            questions: test.questions,
+            created_by: user.id,
+            is_published: true
+          }
+        ])
+        .select()
+        .single();
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Failed to create test: " + error.message,
+          variant: "destructive"
+        });
+        return;
+      }
+
+      setTests([data, ...tests]);
       toast({
-        title: "Login Successful",
-        description: `Welcome ${userType === 'admin' ? 'Teacher' : 'Student'}!`,
+        title: "Test Created",
+        description: `Test "${test.title}" has been created successfully`,
       });
-    } else {
+    } catch (error) {
+      console.error('Error creating test:', error);
       toast({
-        title: "Login Failed",
-        description: "Please enter valid credentials",
+        title: "Error",
+        description: "Failed to create test",
         variant: "destructive"
       });
     }
   };
 
-  const handleLogout = () => {
-    setUser(null);
-    toast({
-      title: "Logged Out",
-      description: "You have been successfully logged out",
-    });
-  };
+  const handleSubmitTest = async (testId: string, answers: any[]) => {
+    if (!user) return;
 
-  const handleCreateTest = (test: any) => {
-    setTests([...tests, test]);
-    toast({
-      title: "Test Created",
-      description: `Test "${test.title}" has been created successfully`,
-    });
-  };
-
-  const handleSubmitTest = (testId: string, answers: any[]) => {
     const test = tests.find(t => t.id === testId);
     if (!test) return;
 
@@ -62,21 +117,44 @@ const Index = () => {
     const score = Math.round((correctAnswers / test.questions.length) * 100);
 
     const result = {
-      studentId: user?.id,
-      testId: testId,
+      student_id: user.id,
+      test_id: testId,
       answers: answers,
       score: score,
-      correctAnswers: correctAnswers,
-      totalQuestions: test.questions.length,
-      completedAt: new Date().toISOString(),
-      timeTaken: '25:30' // Mock time
+      correct_answers: correctAnswers,
+      total_questions: test.questions.length,
+      time_taken: '25:30' // Mock time for now
     };
 
-    setTestResults([...testResults, result]);
-    toast({
-      title: "Test Submitted",
-      description: `Your score: ${score}% (${correctAnswers}/${test.questions.length})`,
-    });
+    try {
+      const { data, error } = await supabase
+        .from('test_results')
+        .insert([result])
+        .select()
+        .single();
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Failed to submit test: " + error.message,
+          variant: "destructive"
+        });
+        return;
+      }
+
+      setTestResults([data, ...testResults]);
+      toast({
+        title: "Test Submitted",
+        description: `Your score: ${score}% (${correctAnswers}/${test.questions.length})`,
+      });
+    } catch (error) {
+      console.error('Error submitting test:', error);
+      toast({
+        title: "Error",
+        description: "Failed to submit test",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleAddResource = (resource: any) => {
@@ -87,11 +165,19 @@ const Index = () => {
     });
   };
 
-  if (!user) {
-    return <LoginForm onLogin={handleLogin} />;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
   }
 
-  if (user.type === 'admin') {
+  if (!user || !profile) {
+    return <LoginForm />;
+  }
+
+  if (profile.user_type === 'admin') {
     return (
       <AdminDashboard
         onLogout={handleLogout}
@@ -109,9 +195,9 @@ const Index = () => {
       onLogout={handleLogout}
       tests={tests}
       onSubmitTest={handleSubmitTest}
-      studentResults={testResults.filter(result => result.studentId === user.id)}
+      studentResults={testResults.filter(result => result.student_id === user.id)}
       resources={resources}
-      studentId={user.id}
+      studentId={profile.student_id || user.id}
     />
   );
 };

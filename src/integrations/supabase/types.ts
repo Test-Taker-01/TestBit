@@ -9,13 +9,125 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+          name: string
+          student_id: string | null
+          updated_at: string | null
+          user_id: string
+          user_type: string
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id?: string
+          name: string
+          student_id?: string | null
+          updated_at?: string | null
+          user_id: string
+          user_type: string
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+          name?: string
+          student_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+          user_type?: string
+        }
+        Relationships: []
+      }
+      test_results: {
+        Row: {
+          answers: Json
+          completed_at: string | null
+          correct_answers: number
+          id: string
+          score: number
+          student_id: string
+          test_id: string
+          time_taken: string | null
+          total_questions: number
+        }
+        Insert: {
+          answers: Json
+          completed_at?: string | null
+          correct_answers: number
+          id?: string
+          score: number
+          student_id: string
+          test_id: string
+          time_taken?: string | null
+          total_questions: number
+        }
+        Update: {
+          answers?: Json
+          completed_at?: string | null
+          correct_answers?: number
+          id?: string
+          score?: number
+          student_id?: string
+          test_id?: string
+          time_taken?: string | null
+          total_questions?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_results_test_id_fkey"
+            columns: ["test_id"]
+            isOneToOne: false
+            referencedRelation: "tests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tests: {
+        Row: {
+          created_at: string | null
+          created_by: string
+          duration: number
+          id: string
+          is_published: boolean | null
+          questions: Json
+          subject: string | null
+          title: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by: string
+          duration: number
+          id?: string
+          is_published?: boolean | null
+          questions: Json
+          subject?: string | null
+          title: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string
+          duration?: number
+          id?: string
+          is_published?: boolean | null
+          questions?: Json
+          subject?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_student_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
