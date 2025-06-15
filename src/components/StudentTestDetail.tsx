@@ -34,16 +34,51 @@ const StudentTestDetail: React.FC<StudentTestDetailProps> = ({ test, result, onB
     return 'Keep practicing!';
   };
 
-  // Calculate time taken as total time - remaining time
+  // Improved time taken calculation with better edge case handling
   const calculateTimeTaken = () => {
-    const totalTimeInSeconds = test.duration * 60;
-    const remainingTime = result.remaining_time || 0;
-    const timeTakenInSeconds = totalTimeInSeconds - remainingTime;
+    // Get test duration in seconds
+    const totalTimeInSeconds = (test.duration || 0) * 60;
     
-    const minutes = Math.floor(timeTakenInSeconds / 60);
+    // Get remaining time, handle different possible formats
+    let remainingTimeInSeconds = 0;
+    
+    if (result.remaining_time !== undefined && result.remaining_time !== null) {
+      // If remaining_time is already in seconds
+      if (typeof result.remaining_time === 'number') {
+        remainingTimeInSeconds = Math.max(0, result.remaining_time);
+      }
+      // If remaining_time is a string like "25:30" (mm:ss format)
+      else if (typeof result.remaining_time === 'string' && result.remaining_time.includes(':')) {
+        const parts = result.remaining_time.split(':');
+        if (parts.length === 2) {
+          const minutes = parseInt(parts[0]) || 0;
+          const seconds = parseInt(parts[1]) || 0;
+          remainingTimeInSeconds = Math.max(0, (minutes * 60) + seconds);
+        }
+      }
+    }
+    
+    // Calculate time actually used
+    const timeTakenInSeconds = Math.max(0, totalTimeInSeconds - remainingTimeInSeconds);
+    
+    // If somehow we have invalid data, show the stored time_taken if available
+    if (timeTakenInSeconds === 0 && result.time_taken) {
+      return result.time_taken;
+    }
+    
+    // Format the time nicely
+    const hours = Math.floor(timeTakenInSeconds / 3600);
+    const minutes = Math.floor((timeTakenInSeconds % 3600) / 60);
     const seconds = timeTakenInSeconds % 60;
     
-    return `${minutes}m ${seconds}s`;
+    // Format based on duration
+    if (hours > 0) {
+      return `${hours}h ${minutes}m ${seconds}s`;
+    } else if (minutes > 0) {
+      return `${minutes}m ${seconds}s`;
+    } else {
+      return `${seconds}s`;
+    }
   };
 
   // Add comprehensive debugging
@@ -54,6 +89,7 @@ const StudentTestDetail: React.FC<StudentTestDetailProps> = ({ test, result, onB
   console.log('Test questions array:', test.questions);
   console.log('Test duration:', test.duration);
   console.log('Remaining time:', result.remaining_time);
+  console.log('Stored time_taken:', result.time_taken);
   console.log('Calculated time taken:', calculateTimeTaken());
 
   return (
