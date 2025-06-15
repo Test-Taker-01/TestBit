@@ -1,11 +1,10 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Download, Eye, BarChart, Trash2, Award, Users, TrendingUp, FileText, ChevronRight } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import DetailedTestResult from './DetailedTestResult';
+import StudentPerformanceList from './StudentPerformanceList';
 
 interface TestResultsProps {
   testResults: any[];
@@ -15,7 +14,7 @@ interface TestResultsProps {
 }
 
 const TestResults: React.FC<TestResultsProps> = ({ testResults, tests, profiles = [], onDeleteTest }) => {
-  const [selectedResult, setSelectedResult] = useState<any>(null);
+  const [selectedTestResults, setSelectedTestResults] = useState<any>(null);
   const [selectedTest, setSelectedTest] = useState<any>(null);
 
   const exportTestToExcel = (testId: string) => {
@@ -64,12 +63,8 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests, profiles 
     const test = tests.find(t => t.id === testId);
     const testResults_filtered = testResults.filter(result => result.test_id === testId);
     
-    // For now, we'll show the first result's detailed view
-    // In a real implementation, you might want to show a list of all results for this test
-    if (testResults_filtered.length > 0) {
-      setSelectedResult(testResults_filtered[0]);
-      setSelectedTest(test);
-    }
+    setSelectedTestResults(testResults_filtered);
+    setSelectedTest(test);
   };
 
   const getStudentName = (studentId: string) => {
@@ -96,14 +91,14 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests, profiles 
     };
   }).filter(testGroup => testGroup.results.length > 0);
 
-  if (selectedResult && selectedTest) {
+  if (selectedTestResults && selectedTest) {
     return (
-      <DetailedTestResult
-        result={selectedResult}
+      <StudentPerformanceList
         test={selectedTest}
-        studentName={getStudentName(selectedResult.student_id)}
+        results={selectedTestResults}
+        profiles={profiles}
         onBack={() => {
-          setSelectedResult(null);
+          setSelectedTestResults(null);
           setSelectedTest(null);
         }}
       />
@@ -165,7 +160,7 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests, profiles 
             </div>
             Test Results
           </CardTitle>
-          <CardDescription className="text-gray-600">Click on any test to view detailed results</CardDescription>
+          <CardDescription className="text-gray-600">Click on any test to view student performance</CardDescription>
         </CardHeader>
         <CardContent>
           {resultsByTest.length === 0 ? (
