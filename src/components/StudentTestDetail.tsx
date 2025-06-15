@@ -159,7 +159,7 @@ const StudentTestDetail: React.FC<StudentTestDetailProps> = ({ test, result, onB
                 <Award className="h-5 w-5 text-orange-500" />
                 <div>
                   <span className="text-sm font-medium text-gray-600">Passing Score</span>
-                  <p className="font-semibold text-gray-900">60%</p>
+                  <p className="font-semibold text-gray-900">40%</p>
                 </div>
               </div>
             </div>
@@ -182,7 +182,8 @@ const StudentTestDetail: React.FC<StudentTestDetailProps> = ({ test, result, onB
           <div className="space-y-6">
             {test.questions.map((question: any, index: number) => {
               const userAnswer = result.answers.find((answer: any) => answer.questionIndex === index);
-              const isCorrect = userAnswer?.isCorrect || false;
+              // Fix: Compare user's selected answer with the correct answer
+              const isCorrect = userAnswer?.selectedAnswer === question.correctAnswer;
               
               return (
                 <Card 
