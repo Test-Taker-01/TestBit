@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Download, Eye, BarChart, Trash2, Award, Users, TrendingUp, FileText, ChevronRight } from 'lucide-react';
+import { Download, Eye, BarChart, Trash2, Award, Users, TrendingUp, FileText, ChevronRight, User } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import StudentPerformanceList from './StudentPerformanceList';
+import DetailedTestResult from './DetailedTestResult';
 
 interface TestResultsProps {
   testResults: any[];
@@ -16,6 +17,8 @@ interface TestResultsProps {
 const TestResults: React.FC<TestResultsProps> = ({ testResults, tests, profiles = [], onDeleteTest }) => {
   const [selectedTestResults, setSelectedTestResults] = useState<any>(null);
   const [selectedTest, setSelectedTest] = useState<any>(null);
+  const [selectedStudentResult, setSelectedStudentResult] = useState<any>(null);
+  const [viewMode, setViewMode] = useState<'overview' | 'test-list' | 'student-detail'>('overview');
 
   const exportTestToExcel = (testId: string) => {
     const test = tests.find(t => t.id === testId);
@@ -65,6 +68,25 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests, profiles 
     
     setSelectedTestResults(testResults_filtered);
     setSelectedTest(test);
+    setViewMode('test-list');
+  };
+
+  const handleViewStudentDetail = (result: any, test: any) => {
+    setSelectedStudentResult(result);
+    setSelectedTest(test);
+    setViewMode('student-detail');
+  };
+
+  const handleBackToOverview = () => {
+    setSelectedTestResults(null);
+    setSelectedTest(null);
+    setSelectedStudentResult(null);
+    setViewMode('overview');
+  };
+
+  const handleBackToTestList = () => {
+    setSelectedStudentResult(null);
+    setViewMode('test-list');
   };
 
   const getStudentName = (studentId: string) => {
@@ -91,16 +113,26 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests, profiles 
     };
   }).filter(testGroup => testGroup.results.length > 0);
 
-  if (selectedTestResults && selectedTest) {
+  // Show detailed student result view
+  if (viewMode === 'student-detail' && selectedStudentResult && selectedTest) {
+    return (
+      <DetailedTestResult
+        result={selectedStudentResult}
+        test={selectedTest}
+        studentName={getStudentName(selectedStudentResult.student_id)}
+        onBack={handleBackToTestList}
+      />
+    );
+  }
+
+  // Show test performance list view
+  if (viewMode === 'test-list' && selectedTestResults && selectedTest) {
     return (
       <StudentPerformanceList
         test={selectedTest}
         results={selectedTestResults}
         profiles={profiles}
-        onBack={() => {
-          setSelectedTestResults(null);
-          setSelectedTest(null);
-        }}
+        onBack={handleBackToOverview}
       />
     );
   }
@@ -160,7 +192,7 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests, profiles 
             </div>
             Test Results
           </CardTitle>
-          <CardDescription className="text-gray-600">Click on any test to view student performance</CardDescription>
+          <CardDescription className="text-gray-600">View detailed performance for each test and student</CardDescription>
         </CardHeader>
         <CardContent>
           {resultsByTest.length === 0 ? (
@@ -172,23 +204,17 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests, profiles 
               <p className="text-gray-400 text-sm mt-2">Students will appear here after completing tests.</p>
             </div>
           ) : (
-            <div className="grid gap-4">
+            <div className="space-y-6">
               {resultsByTest.map((testGroup) => (
-                <Card 
-                  key={testGroup.test.id} 
-                  className="bg-gradient-to-r from-white to-gray-50/80 border border-gray-200 hover:border-purple-300 hover:shadow-lg transition-all duration-300 cursor-pointer group"
-                  onClick={() => handleViewTestDetails(testGroup.test.id)}
-                >
-                  <CardContent className="p-6">
+                <Card key={testGroup.test.id} className="bg-gradient-to-r from-white to-gray-50/80 border border-gray-200">
+                  <CardHeader>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
-                        <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                        <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg">
                           <FileText size={20} className="text-white" />
                         </div>
                         <div>
-                          <h3 className="text-lg font-semibold text-gray-900 group-hover:text-purple-700 transition-colors">
-                            {testGroup.test.title}
-                          </h3>
+                          <h3 className="text-lg font-semibold text-gray-900">{testGroup.test.title}</h3>
                           <div className="flex items-center gap-4 mt-1">
                             {testGroup.test.subject && (
                               <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
@@ -227,9 +253,79 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests, profiles 
                             <Download size={14} />
                             Export
                           </Button>
-                          <ChevronRight className="h-5 w-5 text-purple-500 group-hover:text-purple-700 group-hover:translate-x-1 transition-all" />
+                          <Button 
+                            onClick={() => handleViewTestDetails(testGroup.test.id)}
+                            className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 modern-shadow hover-lift"
+                            size="sm"
+                          >
+                            <Eye size={14} />
+                            View All
+                          </Button>
                         </div>
                       </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <h4 className="text-sm font-semibold text-gray-700 mb-3">Individual Student Results:</h4>
+                      {testGroup.results.length === 0 ? (
+                        <p className="text-sm text-gray-500 text-center py-4">No student submissions for this test</p>
+                      ) : (
+                        <div className="grid gap-3">
+                          {testGroup.results.slice(0, 3).map((result) => (
+                            <Card key={result.id} className="border border-gray-200 bg-white hover:shadow-md transition-all duration-300">
+                              <CardContent className="p-4">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg">
+                                      <User size={16} className="text-white" />
+                                    </div>
+                                    <div>
+                                      <h5 className="font-medium text-gray-900">{getStudentName(result.student_id)}</h5>
+                                      <div className="flex items-center gap-3 mt-1">
+                                        <span className="text-xs text-gray-600">
+                                          Completed: {new Date(result.completed_at).toLocaleDateString()}
+                                        </span>
+                                        {result.time_taken && (
+                                          <span className="text-xs text-gray-600">Time: {result.time_taken}</span>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center gap-3">
+                                    <div className="text-right">
+                                      <Badge variant={getScoreBadgeVariant(result.score)} className="font-bold">
+                                        {result.score}%
+                                      </Badge>
+                                      <p className="text-xs text-gray-600 mt-1">
+                                        {result.correct_answers}/{result.total_questions} correct
+                                      </p>
+                                    </div>
+                                    <Button 
+                                      onClick={() => handleViewStudentDetail(result, testGroup.test)}
+                                      variant="outline"
+                                      size="sm"
+                                      className="border-purple-200 text-purple-600 hover:bg-purple-50"
+                                    >
+                                      View Detail
+                                    </Button>
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          ))}
+                          {testGroup.results.length > 3 && (
+                            <Button 
+                              onClick={() => handleViewTestDetails(testGroup.test.id)}
+                              variant="outline"
+                              className="w-full border-gray-300 text-gray-600 hover:bg-gray-50"
+                            >
+                              View all {testGroup.results.length} student results
+                              <ChevronRight className="h-4 w-4 ml-2" />
+                            </Button>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
