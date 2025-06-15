@@ -17,9 +17,20 @@ const Index = () => {
   const [showLogin, setShowLogin] = useState(false);
   const [selectedRole, setSelectedRole] = useState<'student' | 'teacher' | null>(null);
 
+  // Debug logging
+  useEffect(() => {
+    console.log('Index component state:', {
+      user: user?.id,
+      profile: profile?.user_type,
+      loading,
+      showLogin
+    });
+  }, [user, profile, loading, showLogin]);
+
   // Fetch data when user and profile are available
   useEffect(() => {
     if (user && profile) {
+      console.log('User and profile available, fetching data');
       fetchTests();
       fetchTestResults();
       fetchProfiles();
@@ -398,7 +409,9 @@ const Index = () => {
     setSelectedRole(null);
   };
 
+  // Show loading spinner
   if (loading) {
+    console.log('Showing loading spinner');
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
         <div className="text-center">
@@ -409,13 +422,31 @@ const Index = () => {
     );
   }
 
-  if (!user || !profile) {
+  // If no user, show home page or login
+  if (!user) {
+    console.log('No user, showing:', showLogin ? 'login form' : 'home page');
     if (!showLogin) {
       return <HomePage onGetStarted={handleGetStarted} />;
     }
     return <LoginForm selectedRole={selectedRole} onBack={handleBackToHome} />;
   }
 
+  // If user but no profile, show loading (profile might still be loading)
+  if (!profile) {
+    console.log('User exists but no profile, showing loading');
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="text-lg text-gray-600">Loading your profile...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // User and profile exist, show appropriate dashboard
+  console.log('Showing dashboard for user type:', profile.user_type);
+  
   if (profile.user_type === 'admin') {
     return (
       <AdminDashboard
