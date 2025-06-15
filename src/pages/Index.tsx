@@ -58,18 +58,35 @@ const Index = () => {
 
   const fetchProfiles = async () => {
     try {
+      console.log('Fetching profiles...');
+      console.log('Current user profile:', profile);
+      
       const { data, error } = await supabase
         .from('profiles')
-        .select('*');
+        .select('*')
+        .order('created_at', { ascending: false });
 
       if (error) {
         console.error('Error fetching profiles:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load profiles: " + error.message,
+          variant: "destructive"
+        });
         return;
       }
 
+      console.log('Fetched profiles:', data);
+      console.log('Number of profiles fetched:', data?.length || 0);
+      
       setProfiles(data || []);
     } catch (error) {
       console.error('Error fetching profiles:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load profiles",
+        variant: "destructive"
+      });
     }
   };
 
