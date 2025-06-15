@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FileText, BarChart, Clock, LogOut, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import TestInterface from './TestInterface';
+import FullScreenTestInterface from './FullScreenTestInterface';
 
 interface StudentDashboardProps {
   onLogout: () => void;
@@ -38,13 +38,14 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
 
   if (selectedTest) {
     return (
-      <TestInterface
+      <FullScreenTestInterface
         test={selectedTest}
         onSubmit={(answers) => {
           onSubmitTest(selectedTest.id, answers);
           setSelectedTest(null);
         }}
         onBack={() => setSelectedTest(null)}
+        studentName={studentName}
       />
     );
   }
