@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -114,11 +113,8 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
             </div>
             <div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Student Dashboard
+                Welcome, {studentName}! 🎓
               </h1>
-              <p className="text-gray-600 mt-1 font-medium">
-                Welcome, <span className="font-bold text-purple-600">{studentName}</span>! 🎓
-              </p>
             </div>
           </div>
           <div className="flex items-center gap-3">
