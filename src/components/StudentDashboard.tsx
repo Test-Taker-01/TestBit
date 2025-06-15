@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FileText, BarChart, Clock, LogOut, User, Trophy, Target, TrendingUp } from 'lucide-react';
+import { FileText, BarChart, Clock, LogOut, User, Trophy, Target, TrendingUp, Star, Calendar, Award } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import FullScreenTestInterface from './FullScreenTestInterface';
 import ResultsFilter, { FilterState } from './ResultsFilter';
@@ -51,6 +51,22 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
       filtered = filtered.filter(result => result.test_id === filters.testId);
     }
 
+    // Filter by test name
+    if (filters.testName) {
+      filtered = filtered.filter(result => {
+        const test = tests.find(t => t.id === result.test_id);
+        return test?.title?.toLowerCase().includes(filters.testName.toLowerCase());
+      });
+    }
+
+    // Filter by subject
+    if (filters.subject) {
+      filtered = filtered.filter(result => {
+        const test = tests.find(t => t.id === result.test_id);
+        return test?.subject === filters.subject;
+      });
+    }
+
     // Filter by score range
     if (filters.minScore) {
       filtered = filtered.filter(result => result.score >= parseInt(filters.minScore));
@@ -90,19 +106,26 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      <header className="bg-white/80 backdrop-blur-md shadow-lg border-b border-white/20 sticky top-0 z-40">
+      <header className="bg-white/90 backdrop-blur-md shadow-lg border-b border-white/30 sticky top-0 z-40">
         <div className="px-6 py-4 flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Student Dashboard
-            </h1>
-            <p className="text-gray-600 mt-1">Welcome back, <span className="font-semibold text-purple-600">{studentName}</span>!</p>
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl modern-shadow">
+              <Star size={24} className="text-white" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                Student Dashboard
+              </h1>
+              <p className="text-gray-600 mt-1 font-medium">
+                Welcome, <span className="font-bold text-purple-600">{studentName}</span>! 🎓
+              </p>
+            </div>
           </div>
           <div className="flex items-center gap-3">
             <Button 
               onClick={() => navigate('/profile')} 
               variant="outline" 
-              className="flex items-center gap-2 hover-lift border-purple-200 hover:border-purple-300 hover:bg-purple-50"
+              className="flex items-center gap-2 hover-lift border-purple-200 text-purple-600 hover:border-purple-300 hover:bg-purple-50 bg-white/80 backdrop-blur-sm transition-all duration-300"
             >
               <User size={16} />
               Profile
@@ -110,7 +133,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
             <Button 
               onClick={onLogout} 
               variant="outline" 
-              className="flex items-center gap-2 hover-lift border-gray-200 hover:border-gray-300"
+              className="flex items-center gap-2 hover-lift border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50 bg-white/80 backdrop-blur-sm transition-all duration-300"
             >
               <LogOut size={16} />
               Logout
@@ -121,65 +144,71 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
 
       <div className="p-6">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-3 bg-white/70 backdrop-blur-sm modern-shadow rounded-xl p-1">
+          <TabsList className="grid w-full grid-cols-3 bg-white/80 backdrop-blur-sm modern-shadow rounded-xl p-1 border-0">
             <TabsTrigger 
               value="tests" 
-              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white rounded-lg"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white rounded-lg transition-all duration-300 font-semibold"
             >
-              Available Tests
+              📝 Available Tests
             </TabsTrigger>
             <TabsTrigger 
               value="results"
-              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white rounded-lg"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white rounded-lg transition-all duration-300 font-semibold"
             >
-              My Results
+              📊 My Results
             </TabsTrigger>
             <TabsTrigger 
               value="resources"
-              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white rounded-lg"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white rounded-lg transition-all duration-300 font-semibold"
             >
-              Resources
+              📚 Resources
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="tests" className="space-y-6 mt-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card className="gradient-card hover-lift border-0 modern-shadow">
+              <Card className="bg-white/80 backdrop-blur-sm hover-lift border-0 modern-shadow transition-all duration-300">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-700">Available Tests</CardTitle>
-                  <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg">
+                  <CardTitle className="text-sm font-semibold text-gray-700">Available Tests</CardTitle>
+                  <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg modern-shadow">
                     <FileText className="h-4 w-4 text-white" />
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-gray-900">{availableTests}</div>
-                  <p className="text-xs text-gray-600 mt-1">Ready to take</p>
+                  <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
+                    {availableTests}
+                  </div>
+                  <p className="text-xs text-gray-600 mt-1 font-medium">Ready to take</p>
                 </CardContent>
               </Card>
 
-              <Card className="gradient-card hover-lift border-0 modern-shadow">
+              <Card className="bg-white/80 backdrop-blur-sm hover-lift border-0 modern-shadow transition-all duration-300">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-700">Completed</CardTitle>
-                  <div className="p-2 bg-gradient-to-br from-green-500 to-green-600 rounded-lg">
+                  <CardTitle className="text-sm font-semibold text-gray-700">Completed</CardTitle>
+                  <div className="p-2 bg-gradient-to-br from-green-500 to-green-600 rounded-lg modern-shadow">
                     <Trophy className="h-4 w-4 text-white" />
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-gray-900">{completedTests}</div>
-                  <p className="text-xs text-gray-600 mt-1">Tests completed</p>
+                  <div className="text-3xl font-bold bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">
+                    {completedTests}
+                  </div>
+                  <p className="text-xs text-gray-600 mt-1 font-medium">Tests completed</p>
                 </CardContent>
               </Card>
 
-              <Card className="gradient-card hover-lift border-0 modern-shadow">
+              <Card className="bg-white/80 backdrop-blur-sm hover-lift border-0 modern-shadow transition-all duration-300">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-700">Average Score</CardTitle>
-                  <div className="p-2 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg">
+                  <CardTitle className="text-sm font-semibold text-gray-700">Average Score</CardTitle>
+                  <div className="p-2 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg modern-shadow">
                     <TrendingUp className="h-4 w-4 text-white" />
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-gray-900">{averageScore.toFixed(1)}%</div>
-                  <p className="text-xs text-gray-600 mt-1">Your performance</p>
+                  <div className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-purple-700 bg-clip-text text-transparent">
+                    {averageScore.toFixed(1)}%
+                  </div>
+                  <p className="text-xs text-gray-600 mt-1 font-medium">Your performance</p>
                 </CardContent>
               </Card>
             </div>
@@ -187,37 +216,68 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
             <div className="grid gap-6">
               {tests.map((test) => {
                 const hasCompleted = studentResults.some(result => result.test_id === test.id);
+                const result = studentResults.find(result => result.test_id === test.id);
                 return (
-                  <Card key={test.id} className="bg-white/80 backdrop-blur-sm hover-lift border-0 modern-shadow">
+                  <Card key={test.id} className="bg-white/90 backdrop-blur-sm hover-lift border-0 modern-shadow transition-all duration-300">
                     <CardHeader>
                       <CardTitle className="flex justify-between items-center text-gray-800">
-                        {test.title}
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg">
+                            <FileText size={18} className="text-white" />
+                          </div>
+                          <span className="text-xl font-bold">{test.title}</span>
+                        </div>
                         {hasCompleted && (
-                          <span className="text-sm bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-1 rounded-full font-medium">
-                            ✓ Completed
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 rounded-full font-semibold modern-shadow flex items-center gap-2">
+                              <Award size={14} />
+                              {result?.score}% • Completed
+                            </span>
+                          </div>
                         )}
                       </CardTitle>
-                      <CardDescription className="text-gray-600">
-                        {test.questions.length} questions • Duration: {test.duration} minutes
-                        {test.subject && ` • Subject: ${test.subject}`}
+                      <CardDescription className="text-gray-600 font-medium ml-12">
+                        <div className="flex items-center gap-4 flex-wrap">
+                          <span className="flex items-center gap-1">
+                            <FileText size={14} className="text-purple-500" />
+                            {test.questions.length} questions
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Clock size={14} className="text-blue-500" />
+                            {test.duration} minutes
+                          </span>
+                          {test.subject && (
+                            <span className="flex items-center gap-1">
+                              <Target size={14} className="text-orange-500" />
+                              {test.subject}
+                            </span>
+                          )}
+                        </div>
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="flex justify-between items-center">
-                        <div className="text-sm text-gray-600 flex items-center">
-                          <Clock size={16} className="inline mr-2 text-purple-500" />
-                          {test.duration} minutes
+                        <div className="text-sm text-gray-600 flex items-center gap-4">
+                          <span className="flex items-center gap-2">
+                            <Calendar size={16} className="text-purple-500" />
+                            Duration: {test.duration} minutes
+                          </span>
+                          {hasCompleted && result && (
+                            <span className="flex items-center gap-2 text-green-600 font-semibold">
+                              <Trophy size={16} />
+                              Score: {result.score}%
+                            </span>
+                          )}
                         </div>
                         <Button 
                           onClick={() => setSelectedTest(test)}
                           disabled={hasCompleted}
                           className={`${hasCompleted 
                             ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
-                            : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white modern-shadow'
-                          } transition-all duration-300`}
+                            : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white modern-shadow hover-lift'
+                          } transition-all duration-300 font-semibold px-6`}
                         >
-                          {hasCompleted ? 'Already Completed' : 'Start Test'}
+                          {hasCompleted ? '✓ Already Completed' : '🚀 Start Test'}
                         </Button>
                       </div>
                     </CardContent>
@@ -229,9 +289,14 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
 
           <TabsContent value="results">
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                My Test Results
-              </h2>
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl modern-shadow">
+                  <BarChart size={24} className="text-white" />
+                </div>
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                  My Test Results
+                </h2>
+              </div>
               
               <ResultsFilter 
                 onFilterChange={handleFilterChange}
@@ -241,13 +306,15 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
 
               {filteredResults.length === 0 ? (
                 <div className="text-center py-12">
-                  <div className="p-6 bg-white/80 backdrop-blur-sm rounded-2xl modern-shadow max-w-md mx-auto">
-                    <Target className="h-12 w-12 text-purple-400 mx-auto mb-4" />
-                    <p className="text-gray-500 text-lg">
+                  <div className="p-8 bg-white/90 backdrop-blur-sm rounded-2xl modern-shadow max-w-md mx-auto">
+                    <div className="p-4 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full w-fit mx-auto mb-6">
+                      <Target className="h-12 w-12 text-purple-500" />
+                    </div>
+                    <p className="text-gray-600 text-xl font-semibold mb-2">
                       {studentResults.length === 0 ? 'No test results yet.' : 'No results match your filters.'}
                     </p>
-                    <p className="text-gray-400 text-sm mt-2">
-                      {studentResults.length === 0 ? 'Take your first test to see results here!' : 'Try adjusting your filter criteria.'}
+                    <p className="text-gray-500 text-sm">
+                      {studentResults.length === 0 ? 'Take your first test to see results here! 🎯' : 'Try adjusting your filter criteria. 🔍'}
                     </p>
                   </div>
                 </div>
@@ -257,23 +324,42 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
                     const test = tests.find(t => t.id === result.test_id);
                     const scoreColor = result.score >= 80 ? 'from-green-500 to-green-600' : 
                                      result.score >= 60 ? 'from-yellow-500 to-yellow-600' : 'from-red-500 to-red-600';
+                    const scoreIcon = result.score >= 80 ? '🏆' : result.score >= 60 ? '👍' : '📚';
                     return (
-                      <Card key={result.id} className="bg-white/80 backdrop-blur-sm hover-lift border-0 modern-shadow">
+                      <Card key={result.id} className="bg-white/90 backdrop-blur-sm hover-lift border-0 modern-shadow transition-all duration-300">
                         <CardHeader>
-                          <CardTitle className="text-gray-800">{test?.title || 'Unknown Test'}</CardTitle>
-                          <CardDescription className="flex items-center gap-2">
-                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-white bg-gradient-to-r ${scoreColor}`}>
+                          <CardTitle className="flex items-center gap-3 text-gray-800">
+                            <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg">
+                              <FileText size={18} className="text-white" />
+                            </div>
+                            <span className="text-xl font-bold">{test?.title || 'Unknown Test'}</span>
+                          </CardTitle>
+                          <CardDescription className="flex items-center gap-3 flex-wrap ml-12">
+                            <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold text-white bg-gradient-to-r ${scoreColor} modern-shadow`}>
+                              <span>{scoreIcon}</span>
                               {result.score}%
                             </span>
-                            <span className="text-gray-600">
-                              • Completed on {new Date(result.completed_at).toLocaleDateString()}
+                            <span className="text-gray-600 font-medium flex items-center gap-2">
+                              <Calendar size={14} className="text-purple-500" />
+                              Completed on {new Date(result.completed_at).toLocaleDateString()}
                             </span>
+                            {test?.subject && (
+                              <span className="text-gray-600 font-medium flex items-center gap-2">
+                                <Target size={14} className="text-orange-500" />
+                                {test.subject}
+                              </span>
+                            )}
                           </CardDescription>
                         </CardHeader>
                         <CardContent>
-                          <div className="text-sm text-gray-600">
-                            <BarChart size={16} className="inline mr-2 text-purple-500" />
-                            Correct Answers: <span className="font-semibold">{result.correct_answers} / {result.total_questions}</span>
+                          <div className="flex items-center justify-between">
+                            <div className="text-sm text-gray-600 font-medium flex items-center gap-2">
+                              <BarChart size={16} className="text-purple-500" />
+                              Correct Answers: <span className="font-bold text-gray-800">{result.correct_answers} / {result.total_questions}</span>
+                            </div>
+                            <div className="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                              Accuracy: {Math.round((result.correct_answers / result.total_questions) * 100)}%
+                            </div>
                           </div>
                         </CardContent>
                       </Card>
@@ -286,33 +372,45 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
 
           <TabsContent value="resources">
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Resources
-              </h2>
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl modern-shadow">
+                  <FileText size={24} className="text-white" />
+                </div>
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                  Resources
+                </h2>
+              </div>
               {resources.length === 0 ? (
                 <div className="text-center py-12">
-                  <div className="p-6 bg-white/80 backdrop-blur-sm rounded-2xl modern-shadow max-w-md mx-auto">
-                    <FileText className="h-12 w-12 text-purple-400 mx-auto mb-4" />
-                    <p className="text-gray-500 text-lg">No resources available yet.</p>
-                    <p className="text-gray-400 text-sm mt-2">Check back later for study materials and resources.</p>
+                  <div className="p-8 bg-white/90 backdrop-blur-sm rounded-2xl modern-shadow max-w-md mx-auto">
+                    <div className="p-4 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full w-fit mx-auto mb-6">
+                      <FileText className="h-12 w-12 text-purple-500" />
+                    </div>
+                    <p className="text-gray-600 text-xl font-semibold mb-2">No resources available yet.</p>
+                    <p className="text-gray-500 text-sm">Check back later for study materials and resources. 📖</p>
                   </div>
                 </div>
               ) : (
                 <div className="grid gap-6">
                   {resources.map((resource) => (
-                    <Card key={resource.id} className="bg-white/80 backdrop-blur-sm hover-lift border-0 modern-shadow">
+                    <Card key={resource.id} className="bg-white/90 backdrop-blur-sm hover-lift border-0 modern-shadow transition-all duration-300">
                       <CardHeader>
-                        <CardTitle className="text-gray-800">{resource.title}</CardTitle>
-                        <CardDescription className="text-gray-600">{resource.description}</CardDescription>
+                        <CardTitle className="flex items-center gap-3 text-gray-800">
+                          <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg">
+                            <FileText size={18} className="text-white" />
+                          </div>
+                          <span className="text-xl font-bold">{resource.title}</span>
+                        </CardTitle>
+                        <CardDescription className="text-gray-600 font-medium ml-12">{resource.description}</CardDescription>
                       </CardHeader>
                       <CardContent>
                         <a 
                           href={resource.url} 
                           target="_blank" 
                           rel="noopener noreferrer" 
-                          className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-300 modern-shadow text-sm font-medium"
+                          className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-300 modern-shadow text-sm font-semibold hover-lift"
                         >
-                          View Resource
+                          📄 View Resource
                         </a>
                       </CardContent>
                     </Card>
