@@ -33,6 +33,13 @@ const StudentTestDetail: React.FC<StudentTestDetailProps> = ({ test, result, onB
     return 'Keep practicing!';
   };
 
+  // Add comprehensive debugging
+  console.log('=== DEBUGGING TEST RESULT DATA ===');
+  console.log('Full test object:', test);
+  console.log('Full result object:', result);
+  console.log('Result answers array:', result.answers);
+  console.log('Test questions array:', test.questions);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
@@ -166,7 +173,7 @@ const StudentTestDetail: React.FC<StudentTestDetailProps> = ({ test, result, onB
         </CardContent>
       </Card>
 
-      {/* Question Review - Fixed validation logic */}
+      {/* Question Review - Enhanced debugging and fixed validation */}
       <Card className="bg-white/80 backdrop-blur-sm border-0 modern-shadow">
         <CardHeader>
           <CardTitle className="text-xl bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent flex items-center gap-3">
@@ -180,20 +187,41 @@ const StudentTestDetail: React.FC<StudentTestDetailProps> = ({ test, result, onB
         <CardContent>
           <div className="space-y-6">
             {test.questions.map((question: any, index: number) => {
-              const userAnswer = result.answers.find((answer: any) => answer.questionIndex === index);
+              // Find user answer - try multiple possible structures
+              const userAnswer = result.answers.find((answer: any) => 
+                answer.questionIndex === index || 
+                answer.questionId === index ||
+                answer.question === index
+              );
               
-              // Debug logging
-              console.log(`Question ${index + 1}:`, {
-                question: question.question,
-                userSelectedAnswer: userAnswer?.selectedAnswer,
-                correctAnswer: question.correctAnswer,
-                userAnswerData: userAnswer
-              });
+              // Enhanced debug logging
+              console.log(`\n=== Question ${index + 1} Debug ===`);
+              console.log('Question object:', question);
+              console.log('User answer object:', userAnswer);
+              console.log('Question.correctAnswer:', question.correctAnswer, 'Type:', typeof question.correctAnswer);
+              console.log('UserAnswer?.selectedAnswer:', userAnswer?.selectedAnswer, 'Type:', typeof userAnswer?.selectedAnswer);
+              console.log('UserAnswer?.answer:', userAnswer?.answer, 'Type:', typeof userAnswer?.answer);
+              console.log('UserAnswer?.selected:', userAnswer?.selected, 'Type:', typeof userAnswer?.selected);
               
-              // Fix: Ensure both values are numbers and compare properly
-              const userSelectedIndex = Number(userAnswer?.selectedAnswer);
+              // Try multiple ways to get the user's selected answer
+              let userSelectedAnswer = userAnswer?.selectedAnswer ?? userAnswer?.answer ?? userAnswer?.selected;
+              
+              // Convert to number for comparison
+              const userSelectedIndex = Number(userSelectedAnswer);
               const correctAnswerIndex = Number(question.correctAnswer);
-              const isCorrect = !isNaN(userSelectedIndex) && !isNaN(correctAnswerIndex) && userSelectedIndex === correctAnswerIndex;
+              
+              console.log('Final comparison:');
+              console.log('userSelectedIndex:', userSelectedIndex);
+              console.log('correctAnswerIndex:', correctAnswerIndex);
+              console.log('Are equal?:', userSelectedIndex === correctAnswerIndex);
+              
+              // Determine if answer is correct
+              const isCorrect = !isNaN(userSelectedIndex) && 
+                               !isNaN(correctAnswerIndex) && 
+                               userSelectedIndex === correctAnswerIndex;
+              
+              console.log('Final isCorrect result:', isCorrect);
+              console.log('=== End Question Debug ===\n');
               
               return (
                 <Card 
@@ -246,6 +274,11 @@ const StudentTestDetail: React.FC<StudentTestDetailProps> = ({ test, result, onB
                               </div>
                             );
                           })}
+                        </div>
+                        
+                        {/* Debug info (remove this in production) */}
+                        <div className="mt-4 p-2 bg-gray-100 rounded text-xs text-gray-600">
+                          DEBUG: User selected: {userSelectedAnswer} | Correct: {question.correctAnswer} | Match: {isCorrect ? 'YES' : 'NO'}
                         </div>
                       </div>
                     </div>
