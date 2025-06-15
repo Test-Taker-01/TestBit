@@ -1,11 +1,11 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FileText, BarChart, Clock, LogOut, User, Trophy, Target, TrendingUp, Star, Calendar, Award, Eye, ChevronRight } from 'lucide-react';
+import { FileText, BarChart, Clock, LogOut, User, Trophy, Target, TrendingUp, Star, Calendar, Award } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import FullScreenTestInterface from './FullScreenTestInterface';
-import DetailedTestResult from './DetailedTestResult';
 
 interface StudentDashboardProps {
   onLogout: () => void;
@@ -28,8 +28,6 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState('tests');
   const [selectedTest, setSelectedTest] = useState<any>(null);
-  const [selectedResultTest, setSelectedResultTest] = useState<any>(null);
-  const [selectedResult, setSelectedResult] = useState<any>(null);
   const navigate = useNavigate();
 
   const averageScore = studentResults.length > 0 
@@ -38,23 +36,6 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
 
   const completedTests = studentResults.length;
   const availableTests = tests.length;
-
-  // Group results by test
-  const resultsByTest = tests.map(test => {
-    const result = studentResults.find(r => r.test_id === test.id);
-    return {
-      test,
-      result,
-      hasCompleted: !!result
-    };
-  });
-
-  const completedResultsByTest = resultsByTest.filter(item => item.hasCompleted);
-
-  const handleViewTestResult = (test: any, result: any) => {
-    setSelectedResultTest(test);
-    setSelectedResult(result);
-  };
 
   if (selectedTest) {
     return (
@@ -66,20 +47,6 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
         }}
         onBack={() => setSelectedTest(null)}
         studentName={studentName}
-      />
-    );
-  }
-
-  if (selectedResult && selectedResultTest) {
-    return (
-      <DetailedTestResult
-        result={selectedResult}
-        test={selectedResultTest}
-        studentName={studentName}
-        onBack={() => {
-          setSelectedResult(null);
-          setSelectedResultTest(null);
-        }}
       />
     );
   }
@@ -275,7 +242,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
                 </h2>
               </div>
 
-              {completedResultsByTest.length === 0 ? (
+              {studentResults.length === 0 ? (
                 <div className="text-center py-12">
                   <div className="p-8 bg-white/90 backdrop-blur-sm rounded-2xl modern-shadow max-w-md mx-auto">
                     <div className="p-4 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full w-fit mx-auto mb-6">
@@ -287,17 +254,16 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
                 </div>
               ) : (
                 <div className="grid gap-4">
-                  {completedResultsByTest.map((item) => {
-                    const { test, result } = item;
+                  {studentResults.map((result) => {
+                    const test = tests.find(t => t.id === result.test_id);
+                    if (!test) return null;
+                    
                     const scoreColor = result.score >= 80 ? 'from-green-500 to-green-600' : 
                                      result.score >= 60 ? 'from-yellow-500 to-yellow-600' : 'from-red-500 to-red-600';
                     const scoreIcon = result.score >= 80 ? '🏆' : result.score >= 60 ? '👍' : '📚';
+                    
                     return (
-                      <Card 
-                        key={test.id} 
-                        className="bg-white/90 backdrop-blur-sm hover-lift border-0 modern-shadow transition-all duration-300 cursor-pointer hover:shadow-lg"
-                        onClick={() => handleViewTestResult(test, result)}
-                      >
+                      <Card key={result.id} className="bg-white/90 backdrop-blur-sm hover-lift border-0 modern-shadow transition-all duration-300">
                         <CardContent className="p-6">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4">
@@ -318,16 +284,13 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
                                 </div>
                               </div>
                             </div>
-                            <div className="flex items-center gap-4">
-                              <div className="text-right">
-                                <div className="text-sm text-gray-600 font-medium">
-                                  {result.correct_answers} / {result.total_questions}
-                                </div>
-                                <div className="text-xs text-gray-500">
-                                  correct answers
-                                </div>
+                            <div className="text-right">
+                              <div className="text-sm text-gray-600 font-medium">
+                                {result.correct_answers} / {result.total_questions}
                               </div>
-                              <ChevronRight className="h-5 w-5 text-gray-400" />
+                              <div className="text-xs text-gray-500">
+                                correct answers
+                              </div>
                             </div>
                           </div>
                         </CardContent>
