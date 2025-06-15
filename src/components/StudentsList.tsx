@@ -9,7 +9,15 @@ interface StudentsListProps {
 }
 
 const StudentsList: React.FC<StudentsListProps> = ({ profiles }) => {
-  const students = profiles.filter(profile => profile.user_type === 'student');
+  console.log('All profiles in StudentsList:', profiles);
+  
+  // Filter for students - check for both 'student' and null/undefined user_type as students might be default
+  const students = profiles.filter(profile => 
+    profile.user_type === 'student' || 
+    (profile.user_type !== 'admin' && profile.user_type !== 'teacher')
+  );
+  
+  console.log('Filtered students:', students);
 
   return (
     <div className="space-y-6">
@@ -50,32 +58,40 @@ const StudentsList: React.FC<StudentsListProps> = ({ profiles }) => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {students.map((student) => (
-                  <TableRow key={student.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <User size={16} className="text-gray-400" />
-                        <span className="font-medium proper-line-height">{student.name}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Mail size={16} className="text-gray-400" />
-                        <span className="proper-line-height">{student.email}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm proper-line-height">
-                        {student.student_id || 'N/A'}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <span className="text-gray-600 proper-line-height">
-                        {new Date(student.created_at).toLocaleDateString()}
-                      </span>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {students.map((student) => {
+                  console.log('Rendering student:', student);
+                  const studentName = student.name || student.email?.split('@')[0] || 'Unknown Student';
+                  const studentEmail = student.email || 'No email';
+                  const studentId = student.student_id || student.id || 'N/A';
+                  const registrationDate = student.created_at ? new Date(student.created_at).toLocaleDateString() : 'Unknown';
+                  
+                  return (
+                    <TableRow key={student.id || student.user_id}>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <User size={16} className="text-gray-400" />
+                          <span className="font-medium proper-line-height">{studentName}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Mail size={16} className="text-gray-400" />
+                          <span className="proper-line-height">{studentEmail}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm proper-line-height">
+                          {studentId}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-gray-600 proper-line-height">
+                          {registrationDate}
+                        </span>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </CardContent>
