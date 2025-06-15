@@ -21,19 +21,23 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests, profiles 
   const [filteredResults, setFilteredResults] = useState(testResults);
 
   React.useEffect(() => {
+    console.log('TestResults - testResults changed:', testResults.length);
     setFilteredResults(testResults);
   }, [testResults]);
 
   const handleFilterChange = (filters: FilterState) => {
+    console.log('TestResults - Applying filters:', filters);
     let filtered = [...testResults];
 
     // Filter by test ID
     if (filters.testId) {
+      console.log('Filtering by testId:', filters.testId);
       filtered = filtered.filter(result => result.test_id === filters.testId);
     }
 
     // Filter by test name (search in test titles)
     if (filters.testName) {
+      console.log('Filtering by testName:', filters.testName);
       const searchTerm = filters.testName.toLowerCase();
       filtered = filtered.filter(result => {
         const test = tests.find(t => t.id === result.test_id);
@@ -43,6 +47,7 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests, profiles 
 
     // Filter by subject
     if (filters.subject) {
+      console.log('Filtering by subject:', filters.subject);
       filtered = filtered.filter(result => {
         const test = tests.find(t => t.id === result.test_id);
         return test?.subject === filters.subject;
@@ -51,24 +56,29 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests, profiles 
 
     // Filter by score range
     if (filters.minScore) {
+      console.log('Filtering by minScore:', filters.minScore);
       filtered = filtered.filter(result => result.score >= parseInt(filters.minScore));
     }
     if (filters.maxScore) {
+      console.log('Filtering by maxScore:', filters.maxScore);
       filtered = filtered.filter(result => result.score <= parseInt(filters.maxScore));
     }
 
     // Filter by date range
     if (filters.dateFrom) {
+      console.log('Filtering by dateFrom:', filters.dateFrom);
       filtered = filtered.filter(result => 
         new Date(result.completed_at) >= new Date(filters.dateFrom)
       );
     }
     if (filters.dateTo) {
+      console.log('Filtering by dateTo:', filters.dateTo);
       filtered = filtered.filter(result => 
         new Date(result.completed_at) <= new Date(filters.dateTo + 'T23:59:59')
       );
     }
 
+    console.log('TestResults - Filtered results count:', filtered.length);
     setFilteredResults(filtered);
   };
 

@@ -43,6 +43,8 @@ const ResultsFilter: React.FC<ResultsFilterProps> = ({
 
   const handleFilterChange = (key: keyof FilterState, value: string) => {
     const newFilters = { ...filters, [key]: value };
+    console.log('Filter changed:', key, value);
+    console.log('New filters:', newFilters);
     setFilters(newFilters);
     onFilterChange(newFilters);
   };
@@ -57,6 +59,7 @@ const ResultsFilter: React.FC<ResultsFilterProps> = ({
       dateFrom: '',
       dateTo: ''
     };
+    console.log('Clearing filters');
     setFilters(emptyFilters);
     onFilterChange(emptyFilters);
   };

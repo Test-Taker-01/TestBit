@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -39,19 +40,23 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
   const availableTests = tests.length;
 
   React.useEffect(() => {
+    console.log('StudentDashboard - studentResults changed:', studentResults.length);
     setFilteredResults(studentResults);
   }, [studentResults]);
 
   const handleFilterChange = (filters: FilterState) => {
+    console.log('StudentDashboard - Applying filters:', filters);
     let filtered = [...studentResults];
 
     // Filter by test
     if (filters.testId) {
+      console.log('Filtering by testId:', filters.testId);
       filtered = filtered.filter(result => result.test_id === filters.testId);
     }
 
     // Filter by test name
     if (filters.testName) {
+      console.log('Filtering by testName:', filters.testName);
       filtered = filtered.filter(result => {
         const test = tests.find(t => t.id === result.test_id);
         return test?.title?.toLowerCase().includes(filters.testName.toLowerCase());
@@ -60,6 +65,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
 
     // Filter by subject
     if (filters.subject) {
+      console.log('Filtering by subject:', filters.subject);
       filtered = filtered.filter(result => {
         const test = tests.find(t => t.id === result.test_id);
         return test?.subject === filters.subject;
@@ -68,24 +74,29 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
 
     // Filter by score range
     if (filters.minScore) {
+      console.log('Filtering by minScore:', filters.minScore);
       filtered = filtered.filter(result => result.score >= parseInt(filters.minScore));
     }
     if (filters.maxScore) {
+      console.log('Filtering by maxScore:', filters.maxScore);
       filtered = filtered.filter(result => result.score <= parseInt(filters.maxScore));
     }
 
     // Filter by date range
     if (filters.dateFrom) {
+      console.log('Filtering by dateFrom:', filters.dateFrom);
       filtered = filtered.filter(result => 
         new Date(result.completed_at) >= new Date(filters.dateFrom)
       );
     }
     if (filters.dateTo) {
+      console.log('Filtering by dateTo:', filters.dateTo);
       filtered = filtered.filter(result => 
         new Date(result.completed_at) <= new Date(filters.dateTo + 'T23:59:59')
       );
     }
 
+    console.log('StudentDashboard - Filtered results count:', filtered.length);
     setFilteredResults(filtered);
   };
 
