@@ -1,8 +1,7 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Pen, BookOpen, Users, Award, User, UserCheck } from 'lucide-react';
+import { GraduationCap, BookOpen, Users, Award, User, UserCheck } from 'lucide-react';
 
 interface HomePageProps {
   onGetStarted: (role?: 'student' | 'teacher') => void;
@@ -27,7 +26,7 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
             <CardHeader className="text-center">
               <div className="flex justify-center mb-6">
                 <div className="bg-blue-600 p-4 rounded-full">
-                  <Pen size={48} className="text-white" />
+                  <GraduationCap size={48} className="text-white" />
                 </div>
               </div>
               <CardTitle className="text-3xl text-gray-900 mb-4 header-text">
@@ -93,7 +92,7 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
         <div className="text-center mb-16">
           <div className="flex justify-center mb-6">
             <div className="bg-white p-4 rounded-full shadow-lg">
-              <Pen size={48} className="text-blue-600" />
+              <GraduationCap size={48} className="text-blue-600" />
             </div>
           </div>
           
