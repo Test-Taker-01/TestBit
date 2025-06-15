@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -161,12 +160,12 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
             <div className="mb-6">
               <div className="text-6xl text-blue-600 mb-4">"</div>
               <blockquote className="text-2xl font-medium text-gray-800 italic leading-relaxed proper-line-height">
-                Education is the most powerful weapon which you can use to change the world.
+                The beautiful thing about learning is that no one can take it away from you.
               </blockquote>
             </div>
             <div className="border-t pt-6">
-              <p className="text-lg font-semibold text-gray-700 proper-line-height">Nelson Mandela</p>
-              <p className="text-gray-500 proper-line-height">Former President of South Africa & Nobel Peace Prize Winner</p>
+              <p className="text-lg font-semibold text-gray-700 proper-line-height">B.B. King</p>
+              <p className="text-gray-500 proper-line-height">Legendary Blues Musician & Cultural Icon</p>
             </div>
           </CardContent>
         </Card>
