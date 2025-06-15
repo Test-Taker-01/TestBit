@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import TestCreator from './TestCreator';
 import TestResults from './TestResults';
 import ResourceManager from './ResourceManager';
+import StudentsList from './StudentsList';
 
 interface AdminDashboardProps {
   onLogout: () => void;
@@ -63,10 +64,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
       <div className="p-6">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="tests">Tests</TabsTrigger>
             <TabsTrigger value="results">Results</TabsTrigger>
+            <TabsTrigger value="students">Students</TabsTrigger>
             <TabsTrigger value="resources">Resources</TabsTrigger>
           </TabsList>
 
@@ -171,6 +173,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
               profiles={profiles}
               onDeleteTest={onDeleteTest}
             />
+          </TabsContent>
+
+          <TabsContent value="students">
+            <StudentsList profiles={profiles} />
           </TabsContent>
 
           <TabsContent value="resources">
