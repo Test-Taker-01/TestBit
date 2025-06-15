@@ -1,9 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Clock, ArrowLeft, ArrowRight, Flag } from 'lucide-react';
+import { Clock, ArrowLeft, ArrowRight, Flag, Maximize } from 'lucide-react';
 
 interface TestInterfaceProps {
   test: any;
@@ -14,8 +13,9 @@ interface TestInterfaceProps {
 const TestInterface: React.FC<TestInterfaceProps> = ({ test, onSubmit, onBack }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<number[]>(new Array(test.questions.length).fill(-1));
-  const [timeLeft, setTimeLeft] = useState(test.duration * 60); // Use test duration in seconds
+  const [timeLeft, setTimeLeft] = useState(test.duration * 60);
   const [flagged, setFlagged] = useState<boolean[]>(new Array(test.questions.length).fill(false));
+  const [markedForReview, setMarkedForReview] = useState<boolean[]>(new Array(test.questions.length).fill(false));
 
   useEffect(() => {
     // Reset timer when test changes
@@ -54,6 +54,12 @@ const TestInterface: React.FC<TestInterfaceProps> = ({ test, onSubmit, onBack })
     setFlagged(newFlagged);
   };
 
+  const toggleMarkForReview = () => {
+    const newMarkedForReview = [...markedForReview];
+    newMarkedForReview[currentQuestionIndex] = !newMarkedForReview[currentQuestionIndex];
+    setMarkedForReview(newMarkedForReview);
+  };
+
   const handleSubmit = () => {
     const results = answers.map((answer, index) => ({
       questionId: test.questions[index].id,
@@ -61,6 +67,12 @@ const TestInterface: React.FC<TestInterfaceProps> = ({ test, onSubmit, onBack })
       isCorrect: answer === test.questions[index].correctAnswer
     }));
     onSubmit(results);
+  };
+
+  const enterFullscreen = () => {
+    if (document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen();
+    }
   };
 
   const currentQuestion = test.questions[currentQuestionIndex];
@@ -75,6 +87,10 @@ const TestInterface: React.FC<TestInterfaceProps> = ({ test, onSubmit, onBack })
           Back to Dashboard
         </Button>
         <div className="flex items-center gap-4">
+          <Button onClick={enterFullscreen} variant="outline" className="flex items-center gap-2">
+            <Maximize size={16} />
+            Fullscreen
+          </Button>
           <div className="flex items-center gap-2 text-red-600">
             <Clock size={16} />
             <span className="font-mono font-bold">{formatTime(timeLeft)}</span>
@@ -105,14 +121,23 @@ const TestInterface: React.FC<TestInterfaceProps> = ({ test, onSubmit, onBack })
                 <CardTitle className="text-lg">
                   Q{currentQuestionIndex + 1}. {currentQuestion.question}
                 </CardTitle>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={toggleFlag}
-                  className={flagged[currentQuestionIndex] ? 'text-red-600' : 'text-gray-400'}
-                >
-                  <Flag size={16} />
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={toggleFlag}
+                    className={flagged[currentQuestionIndex] ? 'text-red-600' : 'text-gray-400'}
+                  >
+                    <Flag size={16} />
+                  </Button>
+                  <Button
+                    variant={markedForReview[currentQuestionIndex] ? "default" : "outline"}
+                    size="sm"
+                    onClick={toggleMarkForReview}
+                  >
+                    Mark for Review
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -196,6 +221,10 @@ const TestInterface: React.FC<TestInterfaceProps> = ({ test, onSubmit, onBack })
                   <span>Flagged:</span>
                   <span>{flagged.filter(Boolean).length}</span>
                 </div>
+                <div className="flex justify-between text-sm">
+                  <span>Marked for Review:</span>
+                  <span>{markedForReview.filter(Boolean).length}</span>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -206,23 +235,52 @@ const TestInterface: React.FC<TestInterfaceProps> = ({ test, onSubmit, onBack })
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-5 gap-2">
-                {test.questions.map((_: any, index: number) => (
-                  <button
-                    key={index}
-                    className={`w-10 h-10 rounded text-sm font-medium transition-colors ${
-                      index === currentQuestionIndex
-                        ? 'bg-blue-600 text-white'
-                        : answers[index] !== -1
-                        ? 'bg-green-100 text-green-800 border border-green-300'
-                        : flagged[index]
-                        ? 'bg-red-100 text-red-800 border border-red-300'
-                        : 'bg-gray-100 text-gray-600 border border-gray-300'
-                    }`}
-                    onClick={() => setCurrentQuestionIndex(index)}
-                  >
-                    {index + 1}
-                  </button>
-                ))}
+                {test.questions.map((_: any, index: number) => {
+                  let buttonClass = '';
+                  if (index === currentQuestionIndex) {
+                    buttonClass = 'bg-blue-600 text-white border-blue-600';
+                  } else if (answers[index] !== -1) {
+                    buttonClass = 'bg-green-500 text-white border-green-500';
+                  } else if (markedForReview[index]) {
+                    buttonClass = 'bg-yellow-500 text-white border-yellow-500';
+                  } else if (flagged[index]) {
+                    buttonClass = 'bg-red-500 text-white border-red-500';
+                  } else {
+                    buttonClass = 'bg-gray-400 text-white border-gray-400';
+                  }
+
+                  return (
+                    <button
+                      key={index}
+                      className={`w-10 h-10 rounded text-sm font-medium transition-colors border-2 ${buttonClass}`}
+                      onClick={() => setCurrentQuestionIndex(index)}
+                    >
+                      {index + 1}
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="mt-4 space-y-2 text-xs">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-green-500 rounded"></div>
+                  <span>Answered</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-gray-400 rounded"></div>
+                  <span>Not answered</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-yellow-500 rounded"></div>
+                  <span>Marked for review</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-red-500 rounded"></div>
+                  <span>Flagged</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-blue-600 rounded"></div>
+                  <span>Current question</span>
+                </div>
               </div>
             </CardContent>
           </Card>

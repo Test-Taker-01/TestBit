@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,6 +18,7 @@ const FullScreenTestInterface: React.FC<FullScreenTestInterfaceProps> = ({ test,
   const [answers, setAnswers] = useState<number[]>(new Array(test.questions.length).fill(-1));
   const [timeLeft, setTimeLeft] = useState(test.duration * 60);
   const [flagged, setFlagged] = useState<boolean[]>(new Array(test.questions.length).fill(false));
+  const [markedForReview, setMarkedForReview] = useState<boolean[]>(new Array(test.questions.length).fill(false));
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [exitAttempts, setExitAttempts] = useState(0);
   const [showExitWarning, setShowExitWarning] = useState(false);
@@ -168,6 +170,12 @@ const FullScreenTestInterface: React.FC<FullScreenTestInterfaceProps> = ({ test,
     setFlagged(newFlagged);
   };
 
+  const toggleMarkForReview = () => {
+    const newMarkedForReview = [...markedForReview];
+    newMarkedForReview[currentQuestionIndex] = !newMarkedForReview[currentQuestionIndex];
+    setMarkedForReview(newMarkedForReview);
+  };
+
   const handleSubmit = () => {
     const results = answers.map((answer, index) => ({
       questionId: test.questions[index].id,
@@ -261,14 +269,23 @@ const FullScreenTestInterface: React.FC<FullScreenTestInterfaceProps> = ({ test,
                   <CardTitle className="text-lg text-gray-900">
                     Q{currentQuestionIndex + 1}. {currentQuestion.question}
                   </CardTitle>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={toggleFlag}
-                    className={flagged[currentQuestionIndex] ? 'text-red-600' : 'text-gray-500'}
-                  >
-                    <Flag size={16} />
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={toggleFlag}
+                      className={flagged[currentQuestionIndex] ? 'text-red-600' : 'text-gray-500'}
+                    >
+                      <Flag size={16} />
+                    </Button>
+                    <Button
+                      variant={markedForReview[currentQuestionIndex] ? "default" : "outline"}
+                      size="sm"
+                      onClick={toggleMarkForReview}
+                    >
+                      Mark for Review
+                    </Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -352,6 +369,10 @@ const FullScreenTestInterface: React.FC<FullScreenTestInterfaceProps> = ({ test,
                     <span>Flagged:</span>
                     <span>{flagged.filter(Boolean).length}</span>
                   </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Marked for Review:</span>
+                    <span>{markedForReview.filter(Boolean).length}</span>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -362,23 +383,52 @@ const FullScreenTestInterface: React.FC<FullScreenTestInterfaceProps> = ({ test,
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-5 gap-2">
-                  {test.questions.map((_: any, index: number) => (
-                    <button
-                      key={index}
-                      className={`w-10 h-10 rounded text-sm font-medium transition-colors ${
-                        index === currentQuestionIndex
-                          ? 'bg-blue-600 text-white'
-                          : answers[index] !== -1
-                          ? 'bg-green-600 text-white'
-                          : flagged[index]
-                          ? 'bg-red-600 text-white'
-                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                      }`}
-                      onClick={() => setCurrentQuestionIndex(index)}
-                    >
-                      {index + 1}
-                    </button>
-                  ))}
+                  {test.questions.map((_: any, index: number) => {
+                    let buttonClass = '';
+                    if (index === currentQuestionIndex) {
+                      buttonClass = 'bg-blue-600 text-white border-blue-600';
+                    } else if (answers[index] !== -1) {
+                      buttonClass = 'bg-green-500 text-white border-green-500';
+                    } else if (markedForReview[index]) {
+                      buttonClass = 'bg-yellow-500 text-white border-yellow-500';
+                    } else if (flagged[index]) {
+                      buttonClass = 'bg-red-500 text-white border-red-500';
+                    } else {
+                      buttonClass = 'bg-gray-400 text-white border-gray-400';
+                    }
+
+                    return (
+                      <button
+                        key={index}
+                        className={`w-10 h-10 rounded text-sm font-medium transition-colors border-2 ${buttonClass}`}
+                        onClick={() => setCurrentQuestionIndex(index)}
+                      >
+                        {index + 1}
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="mt-4 space-y-2 text-xs text-gray-700">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-green-500 rounded"></div>
+                    <span>Answered</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-gray-400 rounded"></div>
+                    <span>Not answered</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-yellow-500 rounded"></div>
+                    <span>Marked for review</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-red-500 rounded"></div>
+                    <span>Flagged</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-blue-600 rounded"></div>
+                    <span>Current question</span>
+                  </div>
                 </div>
               </CardContent>
             </Card>
