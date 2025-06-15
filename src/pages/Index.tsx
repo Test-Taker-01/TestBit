@@ -313,6 +313,81 @@ const Index = () => {
     }
   };
 
+  const handleUpdateResource = async (resource: any) => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('resources')
+        .update({
+          title: resource.title,
+          description: resource.description,
+          subject: resource.subject,
+          course: resource.course,
+          type: resource.type,
+          drive_link: resource.driveLink,
+          content: resource.content,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', resource.id)
+        .select()
+        .single();
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Failed to update resource: " + error.message,
+          variant: "destructive"
+        });
+        return;
+      }
+
+      setResources(resources.map(r => r.id === resource.id ? data : r));
+      toast({
+        title: "Resource Updated",
+        description: `Resource "${resource.title}" has been updated successfully`,
+      });
+    } catch (error) {
+      console.error('Error updating resource:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update resource",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleDeleteResource = async (resourceId: string) => {
+    try {
+      const { error } = await supabase
+        .from('resources')
+        .delete()
+        .eq('id', resourceId);
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Failed to delete resource: " + error.message,
+          variant: "destructive"
+        });
+        return;
+      }
+
+      setResources(resources.filter(r => r.id !== resourceId));
+      toast({
+        title: "Resource Deleted",
+        description: "Resource has been deleted successfully",
+      });
+    } catch (error) {
+      console.error('Error deleting resource:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete resource",
+        variant: "destructive"
+      });
+    }
+  };
+
   const handleGetStarted = (role?: 'student' | 'teacher') => {
     setSelectedRole(role || null);
     setShowLogin(true);
@@ -345,6 +420,8 @@ const Index = () => {
         testResults={testResults}
         resources={resources}
         onAddResource={handleAddResource}
+        onUpdateResource={handleUpdateResource}
+        onDeleteResource={handleDeleteResource}
         profiles={profiles}
         onDeleteTest={handleDeleteTest}
       />

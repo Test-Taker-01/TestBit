@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,6 +17,8 @@ interface AdminDashboardProps {
   testResults: any[];
   resources: any[];
   onAddResource: (resource: any) => void;
+  onUpdateResource: (resource: any) => void;
+  onDeleteResource: (resourceId: string) => void;
   profiles: any[];
   onDeleteTest: (testId: string) => void;
 }
@@ -29,6 +30,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   testResults,
   resources,
   onAddResource,
+  onUpdateResource,
+  onDeleteResource,
   profiles,
   onDeleteTest
 }) => {
@@ -265,7 +268,12 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </TabsContent>
 
           <TabsContent value="resources" className="mt-8">
-            <ResourceManager resources={resources} onAddResource={onAddResource} />
+            <ResourceManager 
+              resources={resources} 
+              onAddResource={onAddResource}
+              onUpdateResource={onUpdateResource}
+              onDeleteResource={onDeleteResource}
+            />
           </TabsContent>
         </Tabs>
       </div>

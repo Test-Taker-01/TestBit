@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,11 +10,20 @@ import { Plus, BookOpen, FileText, Video, Link, Trash2, ExternalLink, Calendar, 
 interface ResourceManagerProps {
   resources: any[];
   onAddResource: (resource: any) => void;
+  onUpdateResource?: (resource: any) => void;
+  onDeleteResource?: (resourceId: string) => void;
   userType?: 'teacher' | 'student';
 }
 
-const ResourceManager: React.FC<ResourceManagerProps> = ({ resources, onAddResource, userType = 'teacher' }) => {
+const ResourceManager: React.FC<ResourceManagerProps> = ({ 
+  resources, 
+  onAddResource, 
+  onUpdateResource,
+  onDeleteResource,
+  userType = 'teacher' 
+}) => {
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [editingResource, setEditingResource] = useState<any>(null);
   const [newResource, setNewResource] = useState({
     title: '',
     description: '',
@@ -28,12 +36,24 @@ const ResourceManager: React.FC<ResourceManagerProps> = ({ resources, onAddResou
 
   const handleAddResource = () => {
     if (newResource.title && newResource.subject && newResource.course && (newResource.driveLink || newResource.content)) {
-      const resource = {
-        id: Date.now().toString(),
-        ...newResource,
-        createdAt: new Date().toISOString()
-      };
-      onAddResource(resource);
+      if (editingResource) {
+        // Update existing resource
+        const updatedResource = {
+          ...editingResource,
+          ...newResource,
+          updated_at: new Date().toISOString()
+        };
+        onUpdateResource?.(updatedResource);
+      } else {
+        // Add new resource
+        const resource = {
+          id: Date.now().toString(),
+          ...newResource,
+          createdAt: new Date().toISOString()
+        };
+        onAddResource(resource);
+      }
+      
       setNewResource({
         title: '',
         description: '',
@@ -43,8 +63,43 @@ const ResourceManager: React.FC<ResourceManagerProps> = ({ resources, onAddResou
         driveLink: '',
         content: ''
       });
+      setEditingResource(null);
       setShowAddDialog(false);
     }
+  };
+
+  const handleEditResource = (resource: any) => {
+    setEditingResource(resource);
+    setNewResource({
+      title: resource.title || '',
+      description: resource.description || '',
+      subject: resource.subject || '',
+      course: resource.course || '',
+      type: resource.type || 'document',
+      driveLink: resource.drive_link || resource.driveLink || '',
+      content: resource.content || ''
+    });
+    setShowAddDialog(true);
+  };
+
+  const handleDeleteResource = (resourceId: string) => {
+    if (window.confirm('Are you sure you want to delete this resource?')) {
+      onDeleteResource?.(resourceId);
+    }
+  };
+
+  const handleCloseDialog = () => {
+    setShowAddDialog(false);
+    setEditingResource(null);
+    setNewResource({
+      title: '',
+      description: '',
+      subject: '',
+      course: '',
+      type: 'document',
+      driveLink: '',
+      content: ''
+    });
   };
 
   const getResourceIcon = (type: string) => {
@@ -145,7 +200,12 @@ const ResourceManager: React.FC<ResourceManagerProps> = ({ resources, onAddResou
                     </div>
                   </div>
                   {userType === 'teacher' && (
-                    <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-800 hover:bg-red-50">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="text-red-600 hover:text-red-800 hover:bg-red-50"
+                      onClick={() => handleDeleteResource(resource.id)}
+                    >
                       <Trash2 size={16} />
                     </Button>
                   )}
@@ -154,7 +214,12 @@ const ResourceManager: React.FC<ResourceManagerProps> = ({ resources, onAddResou
               <CardContent className="pt-0">
                 <div className="flex justify-end items-center gap-2">
                   {userType === 'teacher' && (
-                    <Button variant="outline" size="sm" className="flex items-center gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="flex items-center gap-2"
+                      onClick={() => handleEditResource(resource)}
+                    >
                       <Edit3 size={14} />
                       Edit
                     </Button>
@@ -184,10 +249,12 @@ const ResourceManager: React.FC<ResourceManagerProps> = ({ resources, onAddResou
       </div>
 
       {userType === 'teacher' && (
-        <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+        <Dialog open={showAddDialog} onOpenChange={handleCloseDialog}>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle className="text-xl font-semibold">Add New Resource</DialogTitle>
+              <DialogTitle className="text-xl font-semibold">
+                {editingResource ? 'Edit Resource' : 'Add New Resource'}
+              </DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -273,11 +340,11 @@ const ResourceManager: React.FC<ResourceManagerProps> = ({ resources, onAddResou
               )}
 
               <div className="flex justify-end gap-4 pt-4">
-                <Button variant="outline" onClick={() => setShowAddDialog(false)}>
+                <Button variant="outline" onClick={handleCloseDialog}>
                   Cancel
                 </Button>
                 <Button onClick={handleAddResource} className="bg-blue-600 hover:bg-blue-700">
-                  Add Resource
+                  {editingResource ? 'Update Resource' : 'Add Resource'}
                 </Button>
               </div>
             </div>
