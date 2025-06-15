@@ -2,9 +2,8 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Download, Eye, BarChart, Trash2, Award, Users, TrendingUp, FileText } from 'lucide-react';
+import { Download, Eye, BarChart, Trash2, Award, Users, TrendingUp, FileText, ChevronRight } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import DetailedTestResult from './DetailedTestResult';
 
@@ -61,10 +60,16 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests, profiles 
     ? (testResults.filter(result => result.score >= 60).length / testResults.length) * 100 
     : 0;
 
-  const handleViewDetails = (result: any) => {
-    const test = tests.find(t => t.id === result.test_id);
-    setSelectedResult(result);
-    setSelectedTest(test);
+  const handleViewTestDetails = (testId: string) => {
+    const test = tests.find(t => t.id === testId);
+    const testResults_filtered = testResults.filter(result => result.test_id === testId);
+    
+    // For now, we'll show the first result's detailed view
+    // In a real implementation, you might want to show a list of all results for this test
+    if (testResults_filtered.length > 0) {
+      setSelectedResult(testResults_filtered[0]);
+      setSelectedTest(test);
+    }
   };
 
   const getStudentName = (studentId: string) => {
@@ -158,9 +163,9 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests, profiles 
             <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg">
               <FileText size={18} className="text-white" />
             </div>
-            Results by Test
+            Test Results
           </CardTitle>
-          <CardDescription className="text-gray-600">Performance overview for each test</CardDescription>
+          <CardDescription className="text-gray-600">Click on any test to view detailed results</CardDescription>
         </CardHeader>
         <CardContent>
           {resultsByTest.length === 0 ? (
@@ -172,94 +177,64 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests, profiles 
               <p className="text-gray-400 text-sm mt-2">Students will appear here after completing tests.</p>
             </div>
           ) : (
-            <div className="space-y-6">
+            <div className="grid gap-4">
               {resultsByTest.map((testGroup) => (
-                <Card key={testGroup.test.id} className="bg-gray-50/50 border border-gray-200">
-                  <CardHeader>
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="text-lg text-gray-800 flex items-center gap-3">
-                          <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg">
-                            <FileText size={16} className="text-white" />
+                <Card 
+                  key={testGroup.test.id} 
+                  className="bg-gradient-to-r from-white to-gray-50/80 border border-gray-200 hover:border-purple-300 hover:shadow-lg transition-all duration-300 cursor-pointer group"
+                  onClick={() => handleViewTestDetails(testGroup.test.id)}
+                >
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                          <FileText size={20} className="text-white" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold text-gray-900 group-hover:text-purple-700 transition-colors">
+                            {testGroup.test.title}
+                          </h3>
+                          <div className="flex items-center gap-4 mt-1">
+                            {testGroup.test.subject && (
+                              <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                                {testGroup.test.subject}
+                              </span>
+                            )}
+                            <span className="text-sm text-gray-600">{testGroup.test.questions.length} questions</span>
+                            <span className="text-sm text-gray-600">{testGroup.submissionCount} submissions</span>
                           </div>
-                          {testGroup.test.title}
-                        </CardTitle>
-                        <CardDescription className="flex items-center gap-4 mt-2 ml-10">
-                          {testGroup.test.subject && (
-                            <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
-                              {testGroup.test.subject}
-                            </span>
-                          )}
-                          <span className="text-sm text-gray-600">{testGroup.test.questions.length} questions</span>
-                          <span className="text-sm text-gray-600">{testGroup.submissionCount} submissions</span>
-                        </CardDescription>
+                        </div>
                       </div>
-                      <Button 
-                        onClick={() => exportTestToExcel(testGroup.test.id)}
-                        className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white border-0 modern-shadow hover-lift"
-                        size="sm"
-                      >
-                        <Download size={14} />
-                        Export
-                      </Button>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 ml-10">
-                      <div className="flex items-center gap-2">
-                        <Award className="h-4 w-4 text-purple-500" />
-                        <span className="text-sm font-medium">Avg Score: {testGroup.averageScore.toFixed(1)}%</span>
+                      <div className="flex items-center gap-6">
+                        <div className="text-right">
+                          <div className="flex items-center gap-4">
+                            <div className="text-center">
+                              <div className="text-sm font-medium text-gray-600">Average Score</div>
+                              <Badge variant={getScoreBadgeVariant(testGroup.averageScore)} className="font-bold">
+                                {testGroup.averageScore.toFixed(1)}%
+                              </Badge>
+                            </div>
+                            <div className="text-center">
+                              <div className="text-sm font-medium text-gray-600">Pass Rate</div>
+                              <div className="text-lg font-bold text-green-600">{testGroup.passRate.toFixed(1)}%</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              exportTestToExcel(testGroup.test.id);
+                            }}
+                            className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white border-0 modern-shadow hover-lift"
+                            size="sm"
+                          >
+                            <Download size={14} />
+                            Export
+                          </Button>
+                          <ChevronRight className="h-5 w-5 text-purple-500 group-hover:text-purple-700 group-hover:translate-x-1 transition-all" />
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <TrendingUp className="h-4 w-4 text-green-500" />
-                        <span className="text-sm font-medium">Pass Rate: {testGroup.passRate.toFixed(1)}%</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Users className="h-4 w-4 text-blue-500" />
-                        <span className="text-sm font-medium">Submissions: {testGroup.submissionCount}</span>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="overflow-x-auto">
-                      <Table>
-                        <TableHeader>
-                          <TableRow className="bg-gray-50/50">
-                            <TableHead className="font-semibold">Student Name</TableHead>
-                            <TableHead className="font-semibold">Score</TableHead>
-                            <TableHead className="font-semibold">Correct</TableHead>
-                            <TableHead className="font-semibold">Date</TableHead>
-                            <TableHead className="font-semibold">Actions</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {testGroup.results.map((result, index) => {
-                            const studentName = getStudentName(result.student_id);
-                            return (
-                              <TableRow key={index} className="hover:bg-purple-50/30 transition-colors">
-                                <TableCell className="font-medium">{studentName}</TableCell>
-                                <TableCell>
-                                  <Badge variant={getScoreBadgeVariant(result.score)} className="font-medium">
-                                    {result.score}%
-                                  </Badge>
-                                </TableCell>
-                                <TableCell>
-                                  <span className="font-medium text-green-600">{result.correct_answers}/{result.total_questions}</span>
-                                </TableCell>
-                                <TableCell className="text-gray-600">{new Date(result.completed_at).toLocaleDateString()}</TableCell>
-                                <TableCell>
-                                  <Button 
-                                    variant="outline" 
-                                    size="sm"
-                                    onClick={() => handleViewDetails(result)}
-                                    className="border-purple-200 text-purple-600 hover:bg-purple-50 hover:border-purple-300 transition-all duration-300"
-                                  >
-                                    View Details
-                                  </Button>
-                                </TableCell>
-                              </TableRow>
-                            );
-                          })}
-                        </TableBody>
-                      </Table>
                     </div>
                   </CardContent>
                 </Card>
