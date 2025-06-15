@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -34,44 +33,33 @@ const StudentTestDetail: React.FC<StudentTestDetailProps> = ({ test, result, onB
     return 'Keep practicing!';
   };
 
-  // Improved time taken calculation with better edge case handling
+  // Fixed time taken calculation
   const calculateTimeTaken = () => {
     // Get test duration in seconds
     const totalTimeInSeconds = (test.duration || 0) * 60;
     
-    // Get remaining time, handle different possible formats
-    let remainingTimeInSeconds = 0;
-    
-    if (result.remaining_time !== undefined && result.remaining_time !== null) {
-      // If remaining_time is already in seconds
-      if (typeof result.remaining_time === 'number') {
-        remainingTimeInSeconds = Math.max(0, result.remaining_time);
-      }
-      // If remaining_time is a string like "25:30" (mm:ss format)
-      else if (typeof result.remaining_time === 'string' && result.remaining_time.includes(':')) {
-        const parts = result.remaining_time.split(':');
-        if (parts.length === 2) {
-          const minutes = parseInt(parts[0]) || 0;
-          const seconds = parseInt(parts[1]) || 0;
-          remainingTimeInSeconds = Math.max(0, (minutes * 60) + seconds);
-        }
-      }
+    // Parse remaining time correctly
+    let remainingSeconds = 0;
+    if (result.remaining_time && typeof result.remaining_time === 'string' && result.remaining_time.includes(':')) {
+      const parts = result.remaining_time.split(':');
+      const minutes = parseInt(parts[0]) || 0;
+      const seconds = parseInt(parts[1]) || 0;
+      remainingSeconds = (minutes * 60) + seconds;
     }
     
-    // Calculate time actually used
-    const timeTakenInSeconds = Math.max(0, totalTimeInSeconds - remainingTimeInSeconds);
+    // Calculate actual time taken
+    const timeTakenInSeconds = Math.max(0, totalTimeInSeconds - remainingSeconds);
     
-    // If somehow we have invalid data, show the stored time_taken if available
+    // If we have stored time_taken and calculation seems invalid, use stored value
     if (timeTakenInSeconds === 0 && result.time_taken) {
       return result.time_taken;
     }
     
-    // Format the time nicely
+    // Format the time display
     const hours = Math.floor(timeTakenInSeconds / 3600);
     const minutes = Math.floor((timeTakenInSeconds % 3600) / 60);
     const seconds = timeTakenInSeconds % 60;
     
-    // Format based on duration
     if (hours > 0) {
       return `${hours}h ${minutes}m ${seconds}s`;
     } else if (minutes > 0) {
@@ -80,6 +68,28 @@ const StudentTestDetail: React.FC<StudentTestDetailProps> = ({ test, result, onB
       return `${seconds}s`;
     }
   };
+
+  // Enhanced debugging to help identify the issue
+  console.log('=== TIME CALCULATION DEBUG ===');
+  console.log('Test duration (minutes):', test.duration);
+  console.log('Test duration (seconds):', (test.duration || 0) * 60);
+  console.log('Remaining time raw:', result.remaining_time);
+  console.log('Remaining time type:', typeof result.remaining_time);
+  console.log('Stored time_taken:', result.time_taken);
+  
+  // Parse remaining time for debugging
+  let remainingSeconds = 0;
+  if (result.remaining_time && typeof result.remaining_time === 'string' && result.remaining_time.includes(':')) {
+    const parts = result.remaining_time.split(':');
+    const minutes = parseInt(parts[0]) || 0;
+    const seconds = parseInt(parts[1]) || 0;
+    remainingSeconds = (minutes * 60) + seconds;
+  }
+  
+  console.log('Parsed remaining time (seconds):', remainingSeconds);
+  console.log('Calculated time taken (seconds):', Math.max(0, ((test.duration || 0) * 60) - remainingSeconds));
+  console.log('Final display:', calculateTimeTaken());
+  console.log('=== END DEBUG ===');
 
   // Add comprehensive debugging
   console.log('=== DEBUGGING TEST RESULT DATA ===');
