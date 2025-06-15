@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -33,12 +34,27 @@ const StudentTestDetail: React.FC<StudentTestDetailProps> = ({ test, result, onB
     return 'Keep practicing!';
   };
 
+  // Calculate time taken as total time - remaining time
+  const calculateTimeTaken = () => {
+    const totalTimeInSeconds = test.duration * 60;
+    const remainingTime = result.remaining_time || 0;
+    const timeTakenInSeconds = totalTimeInSeconds - remainingTime;
+    
+    const minutes = Math.floor(timeTakenInSeconds / 60);
+    const seconds = timeTakenInSeconds % 60;
+    
+    return `${minutes}m ${seconds}s`;
+  };
+
   // Add comprehensive debugging
   console.log('=== DEBUGGING TEST RESULT DATA ===');
   console.log('Full test object:', test);
   console.log('Full result object:', result);
   console.log('Result answers array:', result.answers);
   console.log('Test questions array:', test.questions);
+  console.log('Test duration:', test.duration);
+  console.log('Remaining time:', result.remaining_time);
+  console.log('Calculated time taken:', calculateTimeTaken());
 
   return (
     <div className="space-y-6">
@@ -103,7 +119,7 @@ const StudentTestDetail: React.FC<StudentTestDetailProps> = ({ test, result, onB
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
-              {result.time_taken || 'N/A'}
+              {calculateTimeTaken()}
             </div>
             <p className="text-xs text-gray-600 mt-1 font-medium">Duration</p>
           </CardContent>
@@ -187,27 +203,47 @@ const StudentTestDetail: React.FC<StudentTestDetailProps> = ({ test, result, onB
         <CardContent>
           <div className="space-y-6">
             {test.questions.map((question: any, index: number) => {
-              // Find user answer - try multiple possible structures
-              const userAnswer = result.answers.find((answer: any) => 
-                answer.questionIndex === index || 
-                answer.questionId === index ||
-                answer.question === index
-              );
+              // Find user answer - try multiple possible structures and indices
+              const userAnswer = result.answers.find((answer: any) => {
+                // Try different matching strategies
+                return answer.questionIndex === index || 
+                       answer.questionId === index ||
+                       answer.question === index ||
+                       answer.questionIndex === (index + 1) ||
+                       answer.questionId === (index + 1) ||
+                       answer.question === (index + 1) ||
+                       (answer.questionId === question.id) ||
+                       (result.answers.indexOf(answer) === index);
+              });
               
               // Enhanced debug logging
               console.log(`\n=== Question ${index + 1} Debug ===`);
               console.log('Question object:', question);
+              console.log('Question ID:', question.id);
               console.log('User answer object:', userAnswer);
-              console.log('Question.correctAnswer:', question.correctAnswer, 'Type:', typeof question.correctAnswer);
-              console.log('UserAnswer?.selectedAnswer:', userAnswer?.selectedAnswer, 'Type:', typeof userAnswer?.selectedAnswer);
-              console.log('UserAnswer?.answer:', userAnswer?.answer, 'Type:', typeof userAnswer?.answer);
-              console.log('UserAnswer?.selected:', userAnswer?.selected, 'Type:', typeof userAnswer?.selected);
+              console.log('All answers for debugging:', result.answers.map((a: any, i: number) => ({
+                index: i,
+                questionIndex: a.questionIndex,
+                questionId: a.questionId,
+                selectedAnswer: a.selectedAnswer,
+                answer: a.answer,
+                selected: a.selected
+              })));
               
               // Try multiple ways to get the user's selected answer
               let userSelectedAnswer = userAnswer?.selectedAnswer ?? userAnswer?.answer ?? userAnswer?.selected;
               
-              // Convert to number for comparison
-              const userSelectedIndex = Number(userSelectedAnswer);
+              // If we still don't have an answer, try by array position
+              if (userSelectedAnswer === undefined && result.answers[index]) {
+                userSelectedAnswer = result.answers[index].selectedAnswer ?? result.answers[index].answer ?? result.answers[index].selected;
+                console.log('Trying array position fallback:', userSelectedAnswer);
+              }
+              
+              console.log('Question.correctAnswer:', question.correctAnswer, 'Type:', typeof question.correctAnswer);
+              console.log('Final userSelectedAnswer:', userSelectedAnswer, 'Type:', typeof userSelectedAnswer);
+              
+              // Convert to number for comparison - handle string numbers too
+              const userSelectedIndex = userSelectedAnswer !== undefined ? Number(userSelectedAnswer) : -1;
               const correctAnswerIndex = Number(question.correctAnswer);
               
               console.log('Final comparison:');
@@ -218,6 +254,7 @@ const StudentTestDetail: React.FC<StudentTestDetailProps> = ({ test, result, onB
               // Determine if answer is correct
               const isCorrect = !isNaN(userSelectedIndex) && 
                                !isNaN(correctAnswerIndex) && 
+                               userSelectedIndex >= 0 &&
                                userSelectedIndex === correctAnswerIndex;
               
               console.log('Final isCorrect result:', isCorrect);
@@ -278,7 +315,7 @@ const StudentTestDetail: React.FC<StudentTestDetailProps> = ({ test, result, onB
                         
                         {/* Debug info (remove this in production) */}
                         <div className="mt-4 p-2 bg-gray-100 rounded text-xs text-gray-600">
-                          DEBUG: User selected: {userSelectedAnswer} | Correct: {question.correctAnswer} | Match: {isCorrect ? 'YES' : 'NO'}
+                          DEBUG: User selected: {userSelectedAnswer} | Correct: {question.correctAnswer} | Match: {isCorrect ? 'YES' : 'NO'} | Question ID: {question.id}
                         </div>
                       </div>
                     </div>
