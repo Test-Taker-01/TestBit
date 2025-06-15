@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, BookOpen, FileText, Video, Link, Trash2, ExternalLink } from 'lucide-react';
+import { Plus, BookOpen, FileText, Video, Link, Trash2, ExternalLink, Calendar, Edit3 } from 'lucide-react';
 
 interface ResourceManagerProps {
   resources: any[];
@@ -50,110 +50,132 @@ const ResourceManager: React.FC<ResourceManagerProps> = ({ resources, onAddResou
   const getResourceIcon = (type: string) => {
     switch (type) {
       case 'video':
-        return <Video size={20} />;
+        return <Video size={20} className="text-red-600" />;
       case 'link':
-        return <Link size={20} />;
+        return <Link size={20} className="text-blue-600" />;
       case 'document':
       default:
-        return <FileText size={20} />;
+        return <FileText size={20} className="text-green-600" />;
     }
   };
 
   const getResourceTypeColor = (type: string) => {
     switch (type) {
       case 'video':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-100 text-red-800 border-red-200';
       case 'link':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-blue-100 text-blue-800 border-blue-200';
       case 'document':
       default:
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 text-green-800 border-green-200';
     }
   };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold">Resource Management</h2>
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">Resource Management</h2>
+          <p className="text-gray-500 mt-1">Manage your educational resources and materials</p>
+        </div>
         {userType === 'teacher' && (
-          <Button onClick={() => setShowAddDialog(true)} className="flex items-center gap-2">
+          <Button onClick={() => setShowAddDialog(true)} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700">
             <Plus size={16} />
             Add Resource
           </Button>
         )}
       </div>
 
-      <div className="grid gap-4">
+      <div className="grid gap-6">
         {resources.length === 0 ? (
-          <Card>
-            <CardContent className="text-center py-8">
-              <BookOpen size={48} className="mx-auto text-gray-400 mb-4" />
-              <p className="text-gray-500">
+          <Card className="border-dashed border-2 border-gray-300">
+            <CardContent className="text-center py-12">
+              <BookOpen size={64} className="mx-auto text-gray-400 mb-4" />
+              <h3 className="text-lg font-semibold text-gray-700 mb-2">No Resources Yet</h3>
+              <p className="text-gray-500 mb-4">
                 {userType === 'teacher' 
-                  ? "No resources yet. Add your first resource to help students learn!" 
-                  : "No resources available yet."}
+                  ? "Start building your resource library by adding your first educational material." 
+                  : "No resources are available at the moment."}
               </p>
+              {userType === 'teacher' && (
+                <Button onClick={() => setShowAddDialog(true)} className="bg-blue-600 hover:bg-blue-700">
+                  <Plus size={16} className="mr-2" />
+                  Add Your First Resource
+                </Button>
+              )}
             </CardContent>
           </Card>
         ) : (
           resources.map((resource) => (
-            <Card key={resource.id}>
-              <CardHeader>
+            <Card key={resource.id} className="hover:shadow-lg transition-shadow duration-200 border-l-4 border-l-blue-500">
+              <CardHeader className="pb-3">
                 <div className="flex justify-between items-start">
-                  <div className="flex items-center gap-3">
-                    {getResourceIcon(resource.type)}
-                    <div>
-                      <CardTitle>{resource.title}</CardTitle>
-                      <CardDescription>{resource.description}</CardDescription>
-                      <div className="flex gap-2 mt-2">
-                        <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
-                          Subject: {resource.subject}
+                  <div className="flex items-start gap-4 flex-1">
+                    <div className="p-2 bg-gray-50 rounded-lg">
+                      {getResourceIcon(resource.type)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-2">
+                        <CardTitle className="text-lg font-semibold text-gray-900 truncate">
+                          {resource.title}
+                        </CardTitle>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getResourceTypeColor(resource.type)}`}>
+                          {resource.type}
                         </span>
-                        <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
-                          Course: {resource.course}
-                        </span>
+                      </div>
+                      {resource.description && (
+                        <CardDescription className="text-sm text-gray-600 mb-3 line-clamp-2">
+                          {resource.description}
+                        </CardDescription>
+                      )}
+                      <div className="flex flex-wrap gap-2">
+                        <div className="flex items-center gap-1 text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-md">
+                          <span className="font-medium">Subject:</span>
+                          <span>{resource.subject}</span>
+                        </div>
+                        <div className="flex items-center gap-1 text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-md">
+                          <span className="font-medium">Course:</span>
+                          <span>{resource.course}</span>
+                        </div>
+                        <div className="flex items-center gap-1 text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-md">
+                          <Calendar size={12} />
+                          <span>{new Date(resource.created_at || resource.createdAt).toLocaleDateString()}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getResourceTypeColor(resource.type)}`}>
-                      {resource.type}
-                    </span>
-                    {userType === 'teacher' && (
-                      <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-800">
-                        <Trash2 size={16} />
-                      </Button>
-                    )}
-                  </div>
+                  {userType === 'teacher' && (
+                    <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-800 hover:bg-red-50">
+                      <Trash2 size={16} />
+                    </Button>
+                  )}
                 </div>
               </CardHeader>
-              <CardContent>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">
-                    Added: {new Date(resource.created_at || resource.createdAt).toLocaleDateString()}
-                  </span>
-                  <div className="space-x-2">
-                    {userType === 'teacher' && (
-                      <Button variant="outline" size="sm">
-                        Edit
-                      </Button>
-                    )}
-                    {resource.drive_link || resource.driveLink ? (
-                      <Button 
-                        size="sm" 
-                        className="flex items-center gap-2"
-                        onClick={() => window.open(resource.drive_link || resource.driveLink, '_blank')}
-                      >
-                        <ExternalLink size={14} />
-                        Open Link
-                      </Button>
-                    ) : null}
-                    {userType === 'teacher' && !(resource.drive_link || resource.driveLink) && (
-                      <Button size="sm">
+              <CardContent className="pt-0">
+                <div className="flex justify-end items-center gap-2">
+                  {userType === 'teacher' && (
+                    <Button variant="outline" size="sm" className="flex items-center gap-2">
+                      <Edit3 size={14} />
+                      Edit
+                    </Button>
+                  )}
+                  {resource.drive_link || resource.driveLink ? (
+                    <Button 
+                      size="sm" 
+                      className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
+                      onClick={() => window.open(resource.drive_link || resource.driveLink, '_blank')}
+                    >
+                      <ExternalLink size={14} />
+                      Open Link
+                    </Button>
+                  ) : (
+                    userType === 'teacher' && (
+                      <Button size="sm" variant="outline" className="flex items-center gap-2">
+                        <FileText size={14} />
                         View Content
                       </Button>
-                    )}
-                  </div>
+                    )
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -165,51 +187,55 @@ const ResourceManager: React.FC<ResourceManagerProps> = ({ resources, onAddResou
         <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle>Add New Resource</DialogTitle>
+              <DialogTitle className="text-xl font-semibold">Add New Resource</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium">Subject *</label>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">Subject *</label>
                   <Input
                     value={newResource.subject}
                     onChange={(e) => setNewResource({...newResource, subject: e.target.value})}
                     placeholder="e.g., Mathematics"
+                    className="w-full"
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Course *</label>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">Course *</label>
                   <Input
                     value={newResource.course}
                     onChange={(e) => setNewResource({...newResource, course: e.target.value})}
                     placeholder="e.g., Algebra 1"
+                    className="w-full"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-sm font-medium">Title *</label>
+                <label className="text-sm font-medium text-gray-700 mb-1 block">Title *</label>
                 <Input
                   value={newResource.title}
                   onChange={(e) => setNewResource({...newResource, title: e.target.value})}
                   placeholder="Enter resource title"
+                  className="w-full"
                 />
               </div>
               
               <div>
-                <label className="text-sm font-medium">Description</label>
+                <label className="text-sm font-medium text-gray-700 mb-1 block">Description</label>
                 <Textarea
                   value={newResource.description}
                   onChange={(e) => setNewResource({...newResource, description: e.target.value})}
                   placeholder="Enter resource description"
                   rows={3}
+                  className="w-full"
                 />
               </div>
 
               <div>
-                <label className="text-sm font-medium">Type</label>
+                <label className="text-sm font-medium text-gray-700 mb-1 block">Type</label>
                 <Select value={newResource.type} onValueChange={(value) => setNewResource({...newResource, type: value})}>
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -221,11 +247,12 @@ const ResourceManager: React.FC<ResourceManagerProps> = ({ resources, onAddResou
               </div>
 
               <div>
-                <label className="text-sm font-medium">Drive Link *</label>
+                <label className="text-sm font-medium text-gray-700 mb-1 block">Drive Link *</label>
                 <Input
                   value={newResource.driveLink}
                   onChange={(e) => setNewResource({...newResource, driveLink: e.target.value})}
                   placeholder="https://drive.google.com/..."
+                  className="w-full"
                 />
                 <p className="text-xs text-gray-500 mt-1">
                   Paste the Google Drive or other cloud storage link here
@@ -234,21 +261,22 @@ const ResourceManager: React.FC<ResourceManagerProps> = ({ resources, onAddResou
 
               {newResource.type === 'document' && (
                 <div>
-                  <label className="text-sm font-medium">Additional Content (Optional)</label>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">Additional Content (Optional)</label>
                   <Textarea
                     value={newResource.content}
                     onChange={(e) => setNewResource({...newResource, content: e.target.value})}
                     placeholder="Enter additional document content or notes"
                     rows={4}
+                    className="w-full"
                   />
                 </div>
               )}
 
-              <div className="flex justify-end gap-4">
+              <div className="flex justify-end gap-4 pt-4">
                 <Button variant="outline" onClick={() => setShowAddDialog(false)}>
                   Cancel
                 </Button>
-                <Button onClick={handleAddResource}>
+                <Button onClick={handleAddResource} className="bg-blue-600 hover:bg-blue-700">
                   Add Resource
                 </Button>
               </div>
