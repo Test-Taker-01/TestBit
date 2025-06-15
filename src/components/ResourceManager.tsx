@@ -130,7 +130,7 @@ const ResourceManager: React.FC<ResourceManagerProps> = ({ resources, onAddResou
               <CardContent>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">
-                    Added: {new Date(resource.createdAt).toLocaleDateString()}
+                    Added: {new Date(resource.created_at || resource.createdAt).toLocaleDateString()}
                   </span>
                   <div className="space-x-2">
                     {userType === 'teacher' && (
@@ -138,31 +138,23 @@ const ResourceManager: React.FC<ResourceManagerProps> = ({ resources, onAddResou
                         Edit
                       </Button>
                     )}
-                    {resource.driveLink && (
+                    {resource.drive_link || resource.driveLink ? (
                       <Button 
                         size="sm" 
                         className="flex items-center gap-2"
-                        onClick={() => window.open(resource.driveLink, '_blank')}
-                        disabled={userType === 'student'}
+                        onClick={() => window.open(resource.drive_link || resource.driveLink, '_blank')}
                       >
                         <ExternalLink size={14} />
-                        {userType === 'teacher' ? 'Open Link' : 'Link Available'}
+                        Open Link
                       </Button>
-                    )}
-                    {userType === 'teacher' && !resource.driveLink && (
+                    ) : null}
+                    {userType === 'teacher' && !(resource.drive_link || resource.driveLink) && (
                       <Button size="sm">
                         View Content
                       </Button>
                     )}
                   </div>
                 </div>
-                {userType === 'student' && resource.driveLink && (
-                  <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded">
-                    <p className="text-sm text-blue-800">
-                      📋 Resource link is available. Contact your teacher for access.
-                    </p>
-                  </div>
-                )}
               </CardContent>
             </Card>
           ))
