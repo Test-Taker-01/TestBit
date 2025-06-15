@@ -15,6 +15,7 @@ const Index = () => {
   const [profiles, setProfiles] = useState<any[]>([]);
   const [dataLoading, setDataLoading] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<'student' | 'teacher' | null>(null);
 
   // Fetch data when user and profile are available
   useEffect(() => {
@@ -256,6 +257,11 @@ const Index = () => {
     });
   };
 
+  const handleGetStarted = (role?: 'student' | 'teacher') => {
+    setSelectedRole(role || null);
+    setShowLogin(true);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -269,9 +275,9 @@ const Index = () => {
 
   if (!user || !profile) {
     if (!showLogin) {
-      return <HomePage onGetStarted={() => setShowLogin(true)} />;
+      return <HomePage onGetStarted={handleGetStarted} />;
     }
-    return <LoginForm />;
+    return <LoginForm selectedRole={selectedRole} />;
   }
 
   if (profile.user_type === 'admin') {

@@ -1,11 +1,10 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { GraduationCap, BookOpen, Users, Award, User, UserCheck } from 'lucide-react';
 
 interface HomePageProps {
-  onGetStarted: () => void;
+  onGetStarted: (role?: 'student' | 'teacher') => void;
 }
 
 const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
@@ -16,9 +15,7 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
   };
 
   const handleRoleSelection = (role: 'student' | 'teacher') => {
-    // For now, just proceed to login regardless of role
-    // In the future, this could be used to customize the experience
-    onGetStarted();
+    onGetStarted(role);
   };
 
   if (showRoleSelection) {
