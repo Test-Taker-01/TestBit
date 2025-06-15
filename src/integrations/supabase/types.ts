@@ -63,6 +63,27 @@ export type Database = {
         }
         Relationships: []
       }
+      teacher_settings: {
+        Row: {
+          id: string
+          special_code: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          id?: string
+          special_code?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          id?: string
+          special_code?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       test_results: {
         Row: {
           answers: Json
@@ -146,6 +167,10 @@ export type Database = {
     }
     Functions: {
       generate_student_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      get_teacher_special_code: {
         Args: Record<PropertyKey, never>
         Returns: string
       }

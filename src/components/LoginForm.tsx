@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -5,6 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { User, GraduationCap, Eye, EyeClosed } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/use-toast';
 
 interface LoginFormProps {
   selectedRole?: 'student' | 'teacher' | null;
@@ -14,7 +17,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ selectedRole }) => {
   const { signIn, signUp } = useAuth();
   const [adminCredentials, setAdminCredentials] = useState({ email: '', password: '' });
   const [studentCredentials, setStudentCredentials] = useState({ email: '', password: '' });
-  const [adminSignupData, setAdminSignupData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
+  const [adminSignupData, setAdminSignupData] = useState({ name: '', email: '', password: '', confirmPassword: '', specialCode: '' });
   const [studentSignupData, setStudentSignupData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
   const [isLoginMode, setIsLoginMode] = useState(true);
   
@@ -39,19 +42,60 @@ const LoginForm: React.FC<LoginFormProps> = ({ selectedRole }) => {
     await signIn(studentCredentials.email, studentCredentials.password);
   };
 
+  const validateTeacherSpecialCode = async (code: string): Promise<boolean> => {
+    try {
+      const { data, error } = await supabase.rpc('get_teacher_special_code');
+      
+      if (error) {
+        console.error('Error fetching special code:', error);
+        toast({
+          title: "Error",
+          description: "Unable to validate special code. Please try again.",
+          variant: "destructive"
+        });
+        return false;
+      }
+
+      return data === code;
+    } catch (error) {
+      console.error('Error validating special code:', error);
+      return false;
+    }
+  };
+
   const handleAdminSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (adminSignupData.password !== adminSignupData.confirmPassword) {
-      alert('Passwords do not match');
+      toast({
+        title: "Error",
+        description: "Passwords do not match",
+        variant: "destructive"
+      });
       return;
     }
+
+    // Validate special code
+    const isValidCode = await validateTeacherSpecialCode(adminSignupData.specialCode);
+    if (!isValidCode) {
+      toast({
+        title: "Invalid Special Code",
+        description: "The special code you entered is incorrect. Please contact an administrator for the correct code.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     await signUp(adminSignupData.email, adminSignupData.password, adminSignupData.name, 'admin');
   };
 
   const handleStudentSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (studentSignupData.password !== studentSignupData.confirmPassword) {
-      alert('Passwords do not match');
+      toast({
+        title: "Error",
+        description: "Passwords do not match",
+        variant: "destructive"
+      });
       return;
     }
     await signUp(studentSignupData.email, studentSignupData.password, studentSignupData.name, 'student');
@@ -272,6 +316,19 @@ const LoginForm: React.FC<LoginFormProps> = ({ selectedRole }) => {
                           onChange={(e) => setAdminSignupData({...adminSignupData, email: e.target.value})}
                           required
                         />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-700">Special Teacher Code</label>
+                        <Input
+                          type="text"
+                          placeholder="Enter the special teacher code"
+                          value={adminSignupData.specialCode}
+                          onChange={(e) => setAdminSignupData({...adminSignupData, specialCode: e.target.value})}
+                          required
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                          Contact an administrator to get the special code required for teacher registration.
+                        </p>
                       </div>
                       <div>
                         <label className="text-sm font-medium text-gray-700">Password</label>
@@ -499,6 +556,19 @@ const LoginForm: React.FC<LoginFormProps> = ({ selectedRole }) => {
                           onChange={(e) => setAdminSignupData({...adminSignupData, email: e.target.value})}
                           required
                         />
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-700">Special Teacher Code</label>
+                        <Input
+                          type="text"
+                          placeholder="Enter the special teacher code"
+                          value={adminSignupData.specialCode}
+                          onChange={(e) => setAdminSignupData({...adminSignupData, specialCode: e.target.value})}
+                          required
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                          Contact an administrator to get the special code required for teacher registration.
+                        </p>
                       </div>
                       <div>
                         <label className="text-sm font-medium text-gray-700">Password</label>
