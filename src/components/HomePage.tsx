@@ -98,7 +98,7 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
           </div>
           
           <h1 className="text-5xl font-bold text-gray-900 mb-6 welcome-text">
-            Welcome to <span className="text-blue-600">EduTest</span>
+            Welcome to <span className="text-blue-600">TestBit</span>
           </h1>
           
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto proper-line-height">

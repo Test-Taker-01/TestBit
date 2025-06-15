@@ -105,7 +105,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ selectedRole }) => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-gray-900">EduTest Platform</CardTitle>
+          <CardTitle className="text-2xl font-bold text-gray-900">TestBit Platform</CardTitle>
           <CardDescription>
             {isLoginMode ? 
               (selectedRole === 'teacher' ? 'Teacher Login' : 
