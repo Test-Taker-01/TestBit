@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import HomePage from '@/components/HomePage';
 import LoginForm from '@/components/LoginForm';
 import AdminDashboard from '@/components/AdminDashboard';
 import StudentDashboard from '@/components/StudentDashboard';
@@ -13,6 +14,7 @@ const Index = () => {
   const [resources, setResources] = useState<any[]>([]);
   const [profiles, setProfiles] = useState<any[]>([]);
   const [dataLoading, setDataLoading] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
 
   // Fetch data when user and profile are available
   useEffect(() => {
@@ -266,6 +268,9 @@ const Index = () => {
   }
 
   if (!user || !profile) {
+    if (!showLogin) {
+      return <HomePage onGetStarted={() => setShowLogin(true)} />;
+    }
     return <LoginForm />;
   }
 
