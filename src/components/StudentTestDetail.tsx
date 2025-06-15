@@ -189,7 +189,7 @@ const StudentTestDetail: React.FC<StudentTestDetailProps> = ({ test, result, onB
         </CardContent>
       </Card>
 
-      {/* Question Review - Enhanced debugging and fixed validation */}
+      {/* Question Review - Enhanced with clearer answer display */}
       <Card className="bg-white/80 backdrop-blur-sm border-0 modern-shadow">
         <CardHeader>
           <CardTitle className="text-xl bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent flex items-center gap-3">
@@ -284,7 +284,50 @@ const StudentTestDetail: React.FC<StudentTestDetailProps> = ({ test, result, onB
                         
                         <p className="text-gray-800 mb-4 font-medium">{question.question}</p>
                         
+                        {/* Answer Summary - Show both user's answer and correct answer clearly */}
+                        <div className="mb-4 p-4 bg-gray-50 rounded-lg border">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <h5 className="text-sm font-semibold text-gray-600 mb-2">Your Answer:</h5>
+                              <div className={`p-3 rounded-lg border-2 ${
+                                isCorrect ? 'bg-green-100 border-green-300 text-green-800' : 'bg-red-100 border-red-300 text-red-800'
+                              }`}>
+                                <div className="flex items-center gap-2">
+                                  {isCorrect ? (
+                                    <CheckCircle className="h-4 w-4 text-green-600" />
+                                  ) : (
+                                    <XCircle className="h-4 w-4 text-red-600" />
+                                  )}
+                                  <span className="font-medium">
+                                    {userSelectedIndex >= 0 && userSelectedIndex < question.options.length 
+                                      ? `${String.fromCharCode(65 + userSelectedIndex)}. ${question.options[userSelectedIndex]}`
+                                      : 'No answer selected'
+                                    }
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <div>
+                              <h5 className="text-sm font-semibold text-gray-600 mb-2">Correct Answer:</h5>
+                              <div className="p-3 rounded-lg border-2 bg-green-100 border-green-300 text-green-800">
+                                <div className="flex items-center gap-2">
+                                  <CheckCircle className="h-4 w-4 text-green-600" />
+                                  <span className="font-medium">
+                                    {correctAnswerIndex >= 0 && correctAnswerIndex < question.options.length
+                                      ? `${String.fromCharCode(65 + correctAnswerIndex)}. ${question.options[correctAnswerIndex]}`
+                                      : 'Invalid correct answer'
+                                    }
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* All Options Display */}
                         <div className="space-y-2">
+                          <h5 className="text-sm font-semibold text-gray-600 mb-2">All Options:</h5>
                           {question.options.map((option: string, optionIndex: number) => {
                             const isUserAnswer = userSelectedIndex === optionIndex;
                             const isCorrectAnswer = correctAnswerIndex === optionIndex;
@@ -305,8 +348,18 @@ const StudentTestDetail: React.FC<StudentTestDetailProps> = ({ test, result, onB
                                   {isUserAnswer && !isCorrect && <XCircle className="h-4 w-4 text-red-600" />}
                                   <span className="font-medium">{String.fromCharCode(65 + optionIndex)}.</span>
                                   <span>{option}</span>
-                                  {isUserAnswer && <span className="text-xs font-semibold ml-auto">(Your answer)</span>}
-                                  {isCorrectAnswer && <span className="text-xs font-semibold ml-auto">(Correct answer)</span>}
+                                  <div className="ml-auto flex gap-2">
+                                    {isUserAnswer && (
+                                      <span className="text-xs font-semibold px-2 py-1 rounded bg-blue-100 text-blue-800">
+                                        Your Choice
+                                      </span>
+                                    )}
+                                    {isCorrectAnswer && (
+                                      <span className="text-xs font-semibold px-2 py-1 rounded bg-green-200 text-green-800">
+                                        Correct
+                                      </span>
+                                    )}
+                                  </div>
                                 </div>
                               </div>
                             );
