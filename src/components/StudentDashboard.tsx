@@ -1,12 +1,10 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FileText, BarChart, Clock, LogOut, User, Trophy, Target, TrendingUp, Star, Calendar, Award } from 'lucide-react';
+import { FileText, BarChart, Clock, LogOut, User, Trophy, Target, TrendingUp, Star, Calendar, Award, Download } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import FullScreenTestInterface from './FullScreenTestInterface';
-import ResultsFilter, { FilterState } from './ResultsFilter';
 
 interface StudentDashboardProps {
   onLogout: () => void;
@@ -29,7 +27,6 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState('tests');
   const [selectedTest, setSelectedTest] = useState<any>(null);
-  const [filteredResults, setFilteredResults] = useState(studentResults);
   const navigate = useNavigate();
 
   const averageScore = studentResults.length > 0 
@@ -39,66 +36,44 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
   const completedTests = studentResults.length;
   const availableTests = tests.length;
 
-  React.useEffect(() => {
-    console.log('StudentDashboard - studentResults changed:', studentResults.length);
-    setFilteredResults(studentResults);
-  }, [studentResults]);
+  const exportTestResults = (testId: string) => {
+    const test = tests.find(t => t.id === testId);
+    const result = studentResults.find(r => r.test_id === testId);
+    
+    if (!result) return;
+    
+    const csvContent = [
+      ['Test Title', 'Student Name', 'Score', 'Total Questions', 'Correct Answers', 'Completion Date'].join(','),
+      [
+        test?.title || 'Unknown Test',
+        studentName,
+        `${result.score}%`,
+        result.total_questions,
+        result.correct_answers,
+        new Date(result.completed_at).toLocaleDateString()
+      ].join(',')
+    ].join('\n');
 
-  const handleFilterChange = (filters: FilterState) => {
-    console.log('StudentDashboard - Applying filters:', filters);
-    let filtered = [...studentResults];
-
-    // Filter by test
-    if (filters.testId) {
-      console.log('Filtering by testId:', filters.testId);
-      filtered = filtered.filter(result => result.test_id === filters.testId);
-    }
-
-    // Filter by test name
-    if (filters.testName) {
-      console.log('Filtering by testName:', filters.testName);
-      filtered = filtered.filter(result => {
-        const test = tests.find(t => t.id === result.test_id);
-        return test?.title?.toLowerCase().includes(filters.testName.toLowerCase());
-      });
-    }
-
-    // Filter by subject
-    if (filters.subject) {
-      console.log('Filtering by subject:', filters.subject);
-      filtered = filtered.filter(result => {
-        const test = tests.find(t => t.id === result.test_id);
-        return test?.subject === filters.subject;
-      });
-    }
-
-    // Filter by score range
-    if (filters.minScore) {
-      console.log('Filtering by minScore:', filters.minScore);
-      filtered = filtered.filter(result => result.score >= parseInt(filters.minScore));
-    }
-    if (filters.maxScore) {
-      console.log('Filtering by maxScore:', filters.maxScore);
-      filtered = filtered.filter(result => result.score <= parseInt(filters.maxScore));
-    }
-
-    // Filter by date range
-    if (filters.dateFrom) {
-      console.log('Filtering by dateFrom:', filters.dateFrom);
-      filtered = filtered.filter(result => 
-        new Date(result.completed_at) >= new Date(filters.dateFrom)
-      );
-    }
-    if (filters.dateTo) {
-      console.log('Filtering by dateTo:', filters.dateTo);
-      filtered = filtered.filter(result => 
-        new Date(result.completed_at) <= new Date(filters.dateTo + 'T23:59:59')
-      );
-    }
-
-    console.log('StudentDashboard - Filtered results count:', filtered.length);
-    setFilteredResults(filtered);
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${test?.title || 'test'}-my-result.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
   };
+
+  // Group results by test
+  const resultsByTest = tests.map(test => {
+    const result = studentResults.find(r => r.test_id === test.id);
+    return {
+      test,
+      result,
+      hasCompleted: !!result
+    };
+  });
+
+  const completedResultsByTest = resultsByTest.filter(item => item.hasCompleted);
 
   if (selectedTest) {
     return (
@@ -304,59 +279,61 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
                   My Test Results
                 </h2>
               </div>
-              
-              <ResultsFilter 
-                onFilterChange={handleFilterChange}
-                tests={tests}
-                showTestFilter={true}
-              />
 
-              {filteredResults.length === 0 ? (
+              {completedResultsByTest.length === 0 ? (
                 <div className="text-center py-12">
                   <div className="p-8 bg-white/90 backdrop-blur-sm rounded-2xl modern-shadow max-w-md mx-auto">
                     <div className="p-4 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full w-fit mx-auto mb-6">
                       <Target className="h-12 w-12 text-purple-500" />
                     </div>
-                    <p className="text-gray-600 text-xl font-semibold mb-2">
-                      {studentResults.length === 0 ? 'No test results yet.' : 'No results match your filters.'}
-                    </p>
-                    <p className="text-gray-500 text-sm">
-                      {studentResults.length === 0 ? 'Take your first test to see results here! 🎯' : 'Try adjusting your filter criteria. 🔍'}
-                    </p>
+                    <p className="text-gray-600 text-xl font-semibold mb-2">No test results yet.</p>
+                    <p className="text-gray-500 text-sm">Take your first test to see results here! 🎯</p>
                   </div>
                 </div>
               ) : (
                 <div className="grid gap-6">
-                  {filteredResults.map((result) => {
-                    const test = tests.find(t => t.id === result.test_id);
+                  {completedResultsByTest.map((item) => {
+                    const { test, result } = item;
                     const scoreColor = result.score >= 80 ? 'from-green-500 to-green-600' : 
                                      result.score >= 60 ? 'from-yellow-500 to-yellow-600' : 'from-red-500 to-red-600';
                     const scoreIcon = result.score >= 80 ? '🏆' : result.score >= 60 ? '👍' : '📚';
                     return (
-                      <Card key={result.id} className="bg-white/90 backdrop-blur-sm hover-lift border-0 modern-shadow transition-all duration-300">
+                      <Card key={test.id} className="bg-white/90 backdrop-blur-sm hover-lift border-0 modern-shadow transition-all duration-300">
                         <CardHeader>
-                          <CardTitle className="flex items-center gap-3 text-gray-800">
-                            <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg">
-                              <FileText size={18} className="text-white" />
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <CardTitle className="flex items-center gap-3 text-gray-800">
+                                <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg">
+                                  <FileText size={18} className="text-white" />
+                                </div>
+                                <span className="text-xl font-bold">{test.title}</span>
+                              </CardTitle>
+                              <CardDescription className="flex items-center gap-3 flex-wrap ml-12">
+                                <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold text-white bg-gradient-to-r ${scoreColor} modern-shadow`}>
+                                  <span>{scoreIcon}</span>
+                                  {result.score}%
+                                </span>
+                                <span className="text-gray-600 font-medium flex items-center gap-2">
+                                  <Calendar size={14} className="text-purple-500" />
+                                  Completed on {new Date(result.completed_at).toLocaleDateString()}
+                                </span>
+                                {test.subject && (
+                                  <span className="text-gray-600 font-medium flex items-center gap-2">
+                                    <Target size={14} className="text-orange-500" />
+                                    {test.subject}
+                                  </span>
+                                )}
+                              </CardDescription>
                             </div>
-                            <span className="text-xl font-bold">{test?.title || 'Unknown Test'}</span>
-                          </CardTitle>
-                          <CardDescription className="flex items-center gap-3 flex-wrap ml-12">
-                            <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold text-white bg-gradient-to-r ${scoreColor} modern-shadow`}>
-                              <span>{scoreIcon}</span>
-                              {result.score}%
-                            </span>
-                            <span className="text-gray-600 font-medium flex items-center gap-2">
-                              <Calendar size={14} className="text-purple-500" />
-                              Completed on {new Date(result.completed_at).toLocaleDateString()}
-                            </span>
-                            {test?.subject && (
-                              <span className="text-gray-600 font-medium flex items-center gap-2">
-                                <Target size={14} className="text-orange-500" />
-                                {test.subject}
-                              </span>
-                            )}
-                          </CardDescription>
+                            <Button 
+                              onClick={() => exportTestResults(test.id)}
+                              className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white border-0 modern-shadow hover-lift"
+                              size="sm"
+                            >
+                              <Download size={14} />
+                              Export
+                            </Button>
+                          </div>
                         </CardHeader>
                         <CardContent>
                           <div className="flex items-center justify-between">
