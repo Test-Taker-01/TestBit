@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -56,93 +57,93 @@ const StudentTestDetail: React.FC<StudentTestDetailProps> = ({ test, result, onB
   console.log('Calculated time taken:', calculateTimeTaken());
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-4 md:p-6">
+    <div className="min-h-screen classic-warm-gradient p-4 md:p-6">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header Section */}
         <div className="flex items-center gap-4 mb-8">
           <Button 
             onClick={onBack}
             variant="outline" 
-            className="flex items-center gap-2 bg-white/70 border-purple-200 text-purple-700 hover:bg-purple-50 hover:border-purple-300"
+            className="flex items-center gap-2 bg-card/80 backdrop-blur-sm border-accent text-foreground hover:bg-accent hover:border-primary transition-all duration-300 proper-line-height"
           >
             <ArrowLeft size={16} />
             Back to Results
           </Button>
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <h1 className="text-3xl font-bold text-foreground header-text">
               {test.title}
             </h1>
-            <p className="text-gray-600 mt-1">Review your test performance and answers</p>
+            <p className="text-muted-foreground mt-1 proper-line-height">Review your test performance and answers</p>
           </div>
         </div>
 
         {/* Performance Summary - More Compact Layout */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <Card className="bg-white/90 backdrop-blur-sm border-0 modern-shadow hover-lift">
+          <Card className="bg-card/90 backdrop-blur-sm hover-lift border border-accent modern-shadow transition-all duration-300">
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-2">
-                <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg">
-                  <Award className="h-4 w-4 text-white" />
+                <div className="p-2 classic-accent-gradient rounded-lg modern-shadow">
+                  <Award className="h-4 w-4 text-amber-900" />
                 </div>
-                <Badge variant={getScoreBadgeVariant(result.score)} className="text-xs">
+                <Badge variant={getScoreBadgeVariant(result.score)} className="text-xs proper-line-height">
                   {result.score >= 60 ? 'Pass' : 'Fail'}
                 </Badge>
               </div>
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-2xl">{getScoreEmoji(result.score)}</span>
-                <div className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                <div className="text-2xl font-bold text-primary header-text">
                   {result.score}%
                 </div>
               </div>
-              <p className="text-xs text-gray-600 font-medium">{getPerformanceMessage(result.score)}</p>
+              <p className="text-xs text-muted-foreground font-medium proper-line-height">{getPerformanceMessage(result.score)}</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-0 modern-shadow hover-lift">
+          <Card className="bg-card/90 backdrop-blur-sm hover-lift border border-accent modern-shadow transition-all duration-300">
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-2">
-                <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg">
-                  <CheckCircle className="h-4 w-4 text-white" />
+                <div className="p-2 classic-accent-gradient rounded-lg modern-shadow">
+                  <CheckCircle className="h-4 w-4 text-amber-900" />
                 </div>
-                <span className="text-xs text-gray-500 font-medium">Correct</span>
+                <span className="text-xs text-muted-foreground font-medium proper-line-height">Correct</span>
               </div>
-              <div className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-1">
+              <div className="text-2xl font-bold text-primary header-text mb-1">
                 {result.correct_answers}/{result.total_questions}
               </div>
-              <p className="text-xs text-gray-600 font-medium">Questions answered correctly</p>
+              <p className="text-xs text-muted-foreground font-medium proper-line-height">Questions answered correctly</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-0 modern-shadow hover-lift">
+          <Card className="bg-card/90 backdrop-blur-sm hover-lift border border-accent modern-shadow transition-all duration-300">
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-2">
-                <div className="p-2 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg">
-                  <Clock className="h-4 w-4 text-white" />
+                <div className="p-2 classic-accent-gradient rounded-lg modern-shadow">
+                  <Clock className="h-4 w-4 text-amber-900" />
                 </div>
-                <span className="text-xs text-gray-500 font-medium">Duration</span>
+                <span className="text-xs text-muted-foreground font-medium proper-line-height">Duration</span>
               </div>
-              <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-1">
+              <div className="text-2xl font-bold text-primary header-text mb-1">
                 {calculateTimeTaken()}
               </div>
-              <p className="text-xs text-gray-600 font-medium">Time taken</p>
+              <p className="text-xs text-muted-foreground font-medium proper-line-height">Time taken</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-0 modern-shadow hover-lift">
+          <Card className="bg-card/90 backdrop-blur-sm hover-lift border border-accent modern-shadow transition-all duration-300">
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-2">
-                <div className="p-2 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg">
-                  <Calendar className="h-4 w-4 text-white" />
+                <div className="p-2 classic-accent-gradient rounded-lg modern-shadow">
+                  <Calendar className="h-4 w-4 text-amber-900" />
                 </div>
-                <span className="text-xs text-gray-500 font-medium">Completed</span>
+                <span className="text-xs text-muted-foreground font-medium proper-line-height">Completed</span>
               </div>
-              <div className="text-lg font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent mb-1">
+              <div className="text-lg font-bold text-primary header-text mb-1">
                 {new Date(result.completed_at).toLocaleDateString('en-US', { 
                   month: 'short', 
                   day: 'numeric' 
                 })}
               </div>
-              <p className="text-xs text-gray-600 font-medium">Submission date</p>
+              <p className="text-xs text-muted-foreground font-medium proper-line-height">Submission date</p>
             </CardContent>
           </Card>
         </div>
@@ -150,45 +151,45 @@ const StudentTestDetail: React.FC<StudentTestDetailProps> = ({ test, result, onB
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Test Information - Sidebar */}
           <div className="lg:col-span-1">
-            <Card className="bg-white/90 backdrop-blur-sm border-0 modern-shadow sticky top-6">
+            <Card className="bg-card/90 backdrop-blur-sm border border-accent modern-shadow sticky top-6">
               <CardHeader className="pb-4">
-                <CardTitle className="text-lg bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent flex items-center gap-2">
-                  <div className="p-1.5 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg">
-                    <FileText size={16} className="text-white" />
+                <CardTitle className="text-lg text-foreground flex items-center gap-2 header-text">
+                  <div className="p-1.5 classic-accent-gradient rounded-lg modern-shadow">
+                    <FileText size={16} className="text-amber-900" />
                   </div>
                   Test Information
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center gap-3 p-3 bg-gray-50/50 rounded-lg">
-                  <Target className="h-4 w-4 text-purple-500" />
+                <div className="flex items-center gap-3 p-3 bg-accent/50 rounded-lg">
+                  <Target className="h-4 w-4 text-amber-700" />
                   <div>
-                    <span className="text-sm font-medium text-gray-600">Subject</span>
-                    <p className="font-semibold text-gray-900">{test.subject || 'General'}</p>
+                    <span className="text-sm font-medium text-muted-foreground proper-line-height">Subject</span>
+                    <p className="font-semibold text-foreground proper-line-height">{test.subject || 'General'}</p>
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-3 p-3 bg-gray-50/50 rounded-lg">
-                  <FileText className="h-4 w-4 text-blue-500" />
+                <div className="flex items-center gap-3 p-3 bg-accent/50 rounded-lg">
+                  <FileText className="h-4 w-4 text-amber-700" />
                   <div>
-                    <span className="text-sm font-medium text-gray-600">Questions</span>
-                    <p className="font-semibold text-gray-900">{test.questions.length} total</p>
+                    <span className="text-sm font-medium text-muted-foreground proper-line-height">Questions</span>
+                    <p className="font-semibold text-foreground proper-line-height">{test.questions.length} total</p>
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-3 p-3 bg-gray-50/50 rounded-lg">
-                  <Clock className="h-4 w-4 text-green-500" />
+                <div className="flex items-center gap-3 p-3 bg-accent/50 rounded-lg">
+                  <Clock className="h-4 w-4 text-amber-700" />
                   <div>
-                    <span className="text-sm font-medium text-gray-600">Time Limit</span>
-                    <p className="font-semibold text-gray-900">{test.duration} minutes</p>
+                    <span className="text-sm font-medium text-muted-foreground proper-line-height">Time Limit</span>
+                    <p className="font-semibold text-foreground proper-line-height">{test.duration} minutes</p>
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-3 p-3 bg-gray-50/50 rounded-lg">
-                  <Award className="h-4 w-4 text-orange-500" />  
+                <div className="flex items-center gap-3 p-3 bg-accent/50 rounded-lg">
+                  <Award className="h-4 w-4 text-amber-700" />  
                   <div>
-                    <span className="text-sm font-medium text-gray-600">Passing Score</span>
-                    <p className="font-semibold text-gray-900">40%</p>
+                    <span className="text-sm font-medium text-muted-foreground proper-line-height">Passing Score</span>
+                    <p className="font-semibold text-foreground proper-line-height">40%</p>
                   </div>
                 </div>
               </CardContent>
@@ -197,15 +198,15 @@ const StudentTestDetail: React.FC<StudentTestDetailProps> = ({ test, result, onB
 
           {/* Question Review - Main Content */}
           <div className="lg:col-span-2">
-            <Card className="bg-white/90 backdrop-blur-sm border-0 modern-shadow">
+            <Card className="bg-card/90 backdrop-blur-sm border border-accent modern-shadow">
               <CardHeader>
-                <CardTitle className="text-xl bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent flex items-center gap-3">
-                  <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg">
-                    <FileText size={18} className="text-white" />
+                <CardTitle className="text-xl text-foreground flex items-center gap-3 header-text">
+                  <div className="p-2 classic-accent-gradient rounded-lg modern-shadow">
+                    <FileText size={18} className="text-amber-900" />
                   </div>
                   Question Review
                 </CardTitle>
-                <CardDescription className="text-gray-600">Review your answers for each question</CardDescription>
+                <CardDescription className="text-muted-foreground proper-line-height">Review your answers for each question</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
@@ -270,7 +271,7 @@ const StudentTestDetail: React.FC<StudentTestDetailProps> = ({ test, result, onB
                     return (
                       <Card 
                         key={index} 
-                        className={`border-l-4 ${isCorrect ? 'border-l-green-500 bg-green-50/50' : 'border-l-red-500 bg-red-50/50'} transition-all duration-300`}
+                        className={`border-l-4 ${isCorrect ? 'border-l-green-500 bg-green-50/50' : 'border-l-red-500 bg-red-50/50'} bg-card/95 backdrop-blur-sm hover-lift border border-accent transition-all duration-300 modern-shadow`}
                       >
                         <CardContent className="p-5">
                           <div className="flex items-start gap-4">
@@ -283,19 +284,19 @@ const StudentTestDetail: React.FC<StudentTestDetailProps> = ({ test, result, onB
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center justify-between mb-3">
-                                <h4 className="text-lg font-semibold text-gray-900">Question {index + 1}</h4>
-                                <Badge variant={isCorrect ? 'default' : 'destructive'} className="font-medium">
+                                <h4 className="text-lg font-semibold text-foreground header-text">Question {index + 1}</h4>
+                                <Badge variant={isCorrect ? 'default' : 'destructive'} className="font-medium proper-line-height">
                                   {isCorrect ? 'Correct' : 'Incorrect'}
                                 </Badge>
                               </div>
                               
-                              <p className="text-gray-800 mb-4 font-medium leading-relaxed">{question.question}</p>
+                              <p className="text-foreground mb-4 font-medium proper-line-height">{question.question}</p>
                               
                               {/* Answer Summary - Improved Layout */}
                               <div className="mb-4 space-y-3">
                                 <div className="grid grid-cols-1 gap-3">
                                   <div>
-                                    <h5 className="text-sm font-semibold text-gray-600 mb-2">Your Answer:</h5>
+                                    <h5 className="text-sm font-semibold text-muted-foreground mb-2 proper-line-height">Your Answer:</h5>
                                     <div className={`p-3 rounded-lg border-2 ${
                                       isCorrect ? 'bg-green-100 border-green-300 text-green-800' : 'bg-red-100 border-red-300 text-red-800'
                                     }`}>
@@ -305,7 +306,7 @@ const StudentTestDetail: React.FC<StudentTestDetailProps> = ({ test, result, onB
                                         ) : (
                                           <XCircle className="h-4 w-4 text-red-600 flex-shrink-0" />
                                         )}
-                                        <span className="font-medium">
+                                        <span className="font-medium proper-line-height">
                                           {userSelectedIndex >= 0 && userSelectedIndex < question.options.length 
                                             ? `${String.fromCharCode(65 + userSelectedIndex)}. ${question.options[userSelectedIndex]}`
                                             : 'No answer selected'
@@ -317,11 +318,11 @@ const StudentTestDetail: React.FC<StudentTestDetailProps> = ({ test, result, onB
                                   
                                   {!isCorrect && (
                                     <div>
-                                      <h5 className="text-sm font-semibold text-gray-600 mb-2">Correct Answer:</h5>
+                                      <h5 className="text-sm font-semibold text-muted-foreground mb-2 proper-line-height">Correct Answer:</h5>
                                       <div className="p-3 rounded-lg border-2 bg-green-100 border-green-300 text-green-800">
                                         <div className="flex items-center gap-2">
                                           <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
-                                          <span className="font-medium">
+                                          <span className="font-medium proper-line-height">
                                             {correctAnswerIndex >= 0 && correctAnswerIndex < question.options.length
                                               ? `${String.fromCharCode(65 + correctAnswerIndex)}. ${question.options[correctAnswerIndex]}`
                                               : 'Invalid correct answer'
@@ -336,7 +337,7 @@ const StudentTestDetail: React.FC<StudentTestDetailProps> = ({ test, result, onB
                               
                               {/* All Options Display - More Compact */}
                               <div className="space-y-2">
-                                <h5 className="text-sm font-semibold text-gray-600 mb-2">All Options:</h5>
+                                <h5 className="text-sm font-semibold text-muted-foreground mb-2 proper-line-height">All Options:</h5>
                                 {question.options.map((option: string, optionIndex: number) => {
                                   const isUserAnswer = userSelectedIndex === optionIndex;
                                   const isCorrectAnswer = correctAnswerIndex === optionIndex;
@@ -347,7 +348,7 @@ const StudentTestDetail: React.FC<StudentTestDetailProps> = ({ test, result, onB
                                   } else if (isUserAnswer && !isCorrect) {
                                     optionClass += 'bg-red-100 border-red-300 text-red-800 font-medium';
                                   } else {
-                                    optionClass += 'bg-gray-50 border-gray-200 text-gray-700';
+                                    optionClass += 'bg-accent/30 border-accent text-foreground';
                                   }
                                   
                                   return (
@@ -356,15 +357,15 @@ const StudentTestDetail: React.FC<StudentTestDetailProps> = ({ test, result, onB
                                         {isCorrectAnswer && <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />}
                                         {isUserAnswer && !isCorrect && <XCircle className="h-4 w-4 text-red-600 flex-shrink-0" />}
                                         <span className="font-bold text-sm">{String.fromCharCode(65 + optionIndex)}.</span>
-                                        <span className="flex-1">{option}</span>
+                                        <span className="flex-1 proper-line-height">{option}</span>
                                         <div className="flex gap-1">
                                           {isUserAnswer && (
-                                            <span className="text-xs font-semibold px-2 py-1 rounded bg-blue-100 text-blue-800">
+                                            <span className="text-xs font-semibold px-2 py-1 rounded bg-blue-100 text-blue-800 proper-line-height">
                                               Your Choice
                                             </span>
                                           )}
                                           {isCorrectAnswer && (
-                                            <span className="text-xs font-semibold px-2 py-1 rounded bg-green-200 text-green-800">
+                                            <span className="text-xs font-semibold px-2 py-1 rounded bg-green-200 text-green-800 proper-line-height">
                                               Correct
                                             </span>
                                           )}
@@ -376,7 +377,7 @@ const StudentTestDetail: React.FC<StudentTestDetailProps> = ({ test, result, onB
                               </div>
                               
                               {/* Debug info (remove this in production) */}
-                              <div className="mt-4 p-2 bg-gray-100 rounded text-xs text-gray-600">
+                              <div className="mt-4 p-2 bg-accent/30 rounded text-xs text-muted-foreground proper-line-height">
                                 DEBUG: User selected: {userSelectedAnswer} | Correct: {question.correctAnswer} | Match: {isCorrect ? 'YES' : 'NO'} | Question ID: {question.id}
                               </div>
                             </div>
