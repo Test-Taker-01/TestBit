@@ -1,8 +1,9 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FileText, BarChart, Clock, LogOut, User } from 'lucide-react';
+import { FileText, BarChart, Clock, LogOut, User, Trophy, Target, TrendingUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import FullScreenTestInterface from './FullScreenTestInterface';
 import ResultsFilter, { FilterState } from './ResultsFilter';
@@ -88,23 +89,29 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      <header className="bg-white/80 backdrop-blur-md shadow-lg border-b border-white/20 sticky top-0 z-40">
         <div className="px-6 py-4 flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Student Dashboard</h1>
-            <p className="text-gray-600">Welcome back, {studentName}!</p>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+              Student Dashboard
+            </h1>
+            <p className="text-gray-600 mt-1">Welcome back, <span className="font-semibold text-purple-600">{studentName}</span>!</p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <Button 
               onClick={() => navigate('/profile')} 
               variant="outline" 
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 hover-lift border-purple-200 hover:border-purple-300 hover:bg-purple-50"
             >
               <User size={16} />
               Profile
             </Button>
-            <Button onClick={onLogout} variant="outline" className="flex items-center gap-2">
+            <Button 
+              onClick={onLogout} 
+              variant="outline" 
+              className="flex items-center gap-2 hover-lift border-gray-200 hover:border-gray-300"
+            >
               <LogOut size={16} />
               Logout
             </Button>
@@ -114,76 +121,101 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
 
       <div className="p-6">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="tests">Available Tests</TabsTrigger>
-            <TabsTrigger value="results">My Results</TabsTrigger>
-            <TabsTrigger value="resources">Resources</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 bg-white/70 backdrop-blur-sm modern-shadow rounded-xl p-1">
+            <TabsTrigger 
+              value="tests" 
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white rounded-lg"
+            >
+              Available Tests
+            </TabsTrigger>
+            <TabsTrigger 
+              value="results"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white rounded-lg"
+            >
+              My Results
+            </TabsTrigger>
+            <TabsTrigger 
+              value="resources"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white rounded-lg"
+            >
+              Resources
+            </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="tests" className="space-y-6">
+          <TabsContent value="tests" className="space-y-6 mt-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card>
+              <Card className="gradient-card hover-lift border-0 modern-shadow">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Available Tests</CardTitle>
-                  <FileText className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-sm font-medium text-gray-700">Available Tests</CardTitle>
+                  <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg">
+                    <FileText className="h-4 w-4 text-white" />
+                  </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{availableTests}</div>
-                  <p className="text-xs text-muted-foreground">Ready to take</p>
+                  <div className="text-3xl font-bold text-gray-900">{availableTests}</div>
+                  <p className="text-xs text-gray-600 mt-1">Ready to take</p>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="gradient-card hover-lift border-0 modern-shadow">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Completed</CardTitle>
-                  <BarChart className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-sm font-medium text-gray-700">Completed</CardTitle>
+                  <div className="p-2 bg-gradient-to-br from-green-500 to-green-600 rounded-lg">
+                    <Trophy className="h-4 w-4 text-white" />
+                  </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{completedTests}</div>
-                  <p className="text-xs text-muted-foreground">Tests completed</p>
+                  <div className="text-3xl font-bold text-gray-900">{completedTests}</div>
+                  <p className="text-xs text-gray-600 mt-1">Tests completed</p>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="gradient-card hover-lift border-0 modern-shadow">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Average Score</CardTitle>
-                  <BarChart className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-sm font-medium text-gray-700">Average Score</CardTitle>
+                  <div className="p-2 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg">
+                    <TrendingUp className="h-4 w-4 text-white" />
+                  </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{averageScore.toFixed(1)}%</div>
-                  <p className="text-xs text-muted-foreground">Your performance</p>
+                  <div className="text-3xl font-bold text-gray-900">{averageScore.toFixed(1)}%</div>
+                  <p className="text-xs text-gray-600 mt-1">Your performance</p>
                 </CardContent>
               </Card>
             </div>
 
-            <div className="grid gap-4">
+            <div className="grid gap-6">
               {tests.map((test) => {
                 const hasCompleted = studentResults.some(result => result.test_id === test.id);
                 return (
-                  <Card key={test.id}>
+                  <Card key={test.id} className="bg-white/80 backdrop-blur-sm hover-lift border-0 modern-shadow">
                     <CardHeader>
-                      <CardTitle className="flex justify-between items-center">
+                      <CardTitle className="flex justify-between items-center text-gray-800">
                         {test.title}
                         {hasCompleted && (
-                          <span className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded">
-                            Completed
+                          <span className="text-sm bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-1 rounded-full font-medium">
+                            ✓ Completed
                           </span>
                         )}
                       </CardTitle>
-                      <CardDescription>
+                      <CardDescription className="text-gray-600">
                         {test.questions.length} questions • Duration: {test.duration} minutes
                         {test.subject && ` • Subject: ${test.subject}`}
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="flex justify-between items-center">
-                        <div className="text-sm text-gray-600">
-                          <Clock size={16} className="inline mr-1" />
+                        <div className="text-sm text-gray-600 flex items-center">
+                          <Clock size={16} className="inline mr-2 text-purple-500" />
                           {test.duration} minutes
                         </div>
                         <Button 
                           onClick={() => setSelectedTest(test)}
                           disabled={hasCompleted}
+                          className={`${hasCompleted 
+                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                            : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white modern-shadow'
+                          } transition-all duration-300`}
                         >
                           {hasCompleted ? 'Already Completed' : 'Start Test'}
                         </Button>
@@ -197,7 +229,9 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
 
           <TabsContent value="results">
             <div className="space-y-6">
-              <h2 className="text-xl font-semibold">My Test Results</h2>
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                My Test Results
+              </h2>
               
               <ResultsFilter 
                 onFilterChange={handleFilterChange}
@@ -206,26 +240,40 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
               />
 
               {filteredResults.length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="text-gray-500">
-                    {studentResults.length === 0 ? 'No test results yet.' : 'No results match your filters.'}
-                  </p>
+                <div className="text-center py-12">
+                  <div className="p-6 bg-white/80 backdrop-blur-sm rounded-2xl modern-shadow max-w-md mx-auto">
+                    <Target className="h-12 w-12 text-purple-400 mx-auto mb-4" />
+                    <p className="text-gray-500 text-lg">
+                      {studentResults.length === 0 ? 'No test results yet.' : 'No results match your filters.'}
+                    </p>
+                    <p className="text-gray-400 text-sm mt-2">
+                      {studentResults.length === 0 ? 'Take your first test to see results here!' : 'Try adjusting your filter criteria.'}
+                    </p>
+                  </div>
                 </div>
               ) : (
-                <div className="grid gap-4">
+                <div className="grid gap-6">
                   {filteredResults.map((result) => {
                     const test = tests.find(t => t.id === result.test_id);
+                    const scoreColor = result.score >= 80 ? 'from-green-500 to-green-600' : 
+                                     result.score >= 60 ? 'from-yellow-500 to-yellow-600' : 'from-red-500 to-red-600';
                     return (
-                      <Card key={result.id}>
+                      <Card key={result.id} className="bg-white/80 backdrop-blur-sm hover-lift border-0 modern-shadow">
                         <CardHeader>
-                          <CardTitle>{test?.title || 'Unknown Test'}</CardTitle>
-                          <CardDescription>
-                            Score: {result.score}% • Completed on {new Date(result.completed_at).toLocaleDateString()}
+                          <CardTitle className="text-gray-800">{test?.title || 'Unknown Test'}</CardTitle>
+                          <CardDescription className="flex items-center gap-2">
+                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-white bg-gradient-to-r ${scoreColor}`}>
+                              {result.score}%
+                            </span>
+                            <span className="text-gray-600">
+                              • Completed on {new Date(result.completed_at).toLocaleDateString()}
+                            </span>
                           </CardDescription>
                         </CardHeader>
                         <CardContent>
                           <div className="text-sm text-gray-600">
-                            Correct Answers: {result.correct_answers} / {result.total_questions}
+                            <BarChart size={16} className="inline mr-2 text-purple-500" />
+                            Correct Answers: <span className="font-semibold">{result.correct_answers} / {result.total_questions}</span>
                           </div>
                         </CardContent>
                       </Card>
@@ -238,21 +286,32 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
 
           <TabsContent value="resources">
             <div className="space-y-6">
-              <h2 className="text-xl font-semibold">Resources</h2>
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                Resources
+              </h2>
               {resources.length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="text-gray-500">No resources available yet.</p>
+                <div className="text-center py-12">
+                  <div className="p-6 bg-white/80 backdrop-blur-sm rounded-2xl modern-shadow max-w-md mx-auto">
+                    <FileText className="h-12 w-12 text-purple-400 mx-auto mb-4" />
+                    <p className="text-gray-500 text-lg">No resources available yet.</p>
+                    <p className="text-gray-400 text-sm mt-2">Check back later for study materials and resources.</p>
+                  </div>
                 </div>
               ) : (
-                <div className="grid gap-4">
+                <div className="grid gap-6">
                   {resources.map((resource) => (
-                    <Card key={resource.id}>
+                    <Card key={resource.id} className="bg-white/80 backdrop-blur-sm hover-lift border-0 modern-shadow">
                       <CardHeader>
-                        <CardTitle>{resource.title}</CardTitle>
-                        <CardDescription>{resource.description}</CardDescription>
+                        <CardTitle className="text-gray-800">{resource.title}</CardTitle>
+                        <CardDescription className="text-gray-600">{resource.description}</CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <a href={resource.url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                        <a 
+                          href={resource.url} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-300 modern-shadow text-sm font-medium"
+                        >
                           View Resource
                         </a>
                       </CardContent>
