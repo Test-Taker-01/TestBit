@@ -11,13 +11,18 @@ interface StudentsListProps {
 const StudentsList: React.FC<StudentsListProps> = ({ profiles }) => {
   console.log('All profiles in StudentsList:', profiles);
   
-  // Filter for students - check for both 'student' and null/undefined user_type as students might be default
-  const students = profiles.filter(profile => 
-    profile.user_type === 'student' || 
-    (profile.user_type !== 'admin' && profile.user_type !== 'teacher')
-  );
+  // Filter for students more comprehensively
+  const students = profiles.filter(profile => {
+    // Include profiles that are explicitly 'student' or have no user_type (default to student)
+    // Also include profiles that have a student_id which indicates they're students
+    return profile.user_type === 'student' || 
+           !profile.user_type || 
+           profile.student_id || 
+           (profile.user_type !== 'admin' && profile.user_type !== 'teacher');
+  });
   
   console.log('Filtered students:', students);
+  console.log('Student count:', students.length);
 
   return (
     <div className="space-y-6">
@@ -34,8 +39,12 @@ const StudentsList: React.FC<StudentsListProps> = ({ profiles }) => {
           <CardContent className="flex flex-col items-center justify-center py-8">
             <Users size={48} className="text-gray-400 mb-4" />
             <CardTitle className="text-lg text-gray-600 mb-2 header-text">No Students Yet</CardTitle>
-            <CardDescription className="proper-line-height">
+            <CardDescription className="proper-line-height text-center">
               Students will appear here once they register for your platform.
+              <br />
+              <span className="text-sm text-gray-500 mt-2 block">
+                Debug: Found {profiles.length} total profiles in database
+              </span>
             </CardDescription>
           </CardContent>
         </Card>
@@ -54,6 +63,7 @@ const StudentsList: React.FC<StudentsListProps> = ({ profiles }) => {
                   <TableHead className="proper-line-height">Name</TableHead>
                   <TableHead className="proper-line-height">Email</TableHead>
                   <TableHead className="proper-line-height">Student ID</TableHead>
+                  <TableHead className="proper-line-height">User Type</TableHead>
                   <TableHead className="proper-line-height">Registration Date</TableHead>
                 </TableRow>
               </TableHeader>
@@ -63,6 +73,7 @@ const StudentsList: React.FC<StudentsListProps> = ({ profiles }) => {
                   const studentName = student.name || student.email?.split('@')[0] || 'Unknown Student';
                   const studentEmail = student.email || 'No email';
                   const studentId = student.student_id || student.id || 'N/A';
+                  const userType = student.user_type || 'student';
                   const registrationDate = student.created_at ? new Date(student.created_at).toLocaleDateString() : 'Unknown';
                   
                   return (
@@ -82,6 +93,13 @@ const StudentsList: React.FC<StudentsListProps> = ({ profiles }) => {
                       <TableCell>
                         <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm proper-line-height">
                           {studentId}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <span className={`px-2 py-1 rounded text-sm proper-line-height ${
+                          userType === 'student' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                        }`}>
+                          {userType}
                         </span>
                       </TableCell>
                       <TableCell>
