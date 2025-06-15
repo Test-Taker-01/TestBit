@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Download, Eye, BarChart, Trash2 } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import DetailedTestResult from './DetailedTestResult';
+import ResultsFilter, { FilterState } from './ResultsFilter';
 
 interface TestResultsProps {
   testResults: any[];
@@ -18,11 +19,47 @@ interface TestResultsProps {
 const TestResults: React.FC<TestResultsProps> = ({ testResults, tests, profiles = [], onDeleteTest }) => {
   const [selectedResult, setSelectedResult] = useState<any>(null);
   const [selectedTest, setSelectedTest] = useState<any>(null);
+  const [filteredResults, setFilteredResults] = useState(testResults);
+
+  React.useEffect(() => {
+    setFilteredResults(testResults);
+  }, [testResults]);
+
+  const handleFilterChange = (filters: FilterState) => {
+    let filtered = [...testResults];
+
+    // Filter by test
+    if (filters.testId) {
+      filtered = filtered.filter(result => result.test_id === filters.testId);
+    }
+
+    // Filter by score range
+    if (filters.minScore) {
+      filtered = filtered.filter(result => result.score >= parseInt(filters.minScore));
+    }
+    if (filters.maxScore) {
+      filtered = filtered.filter(result => result.score <= parseInt(filters.maxScore));
+    }
+
+    // Filter by date range
+    if (filters.dateFrom) {
+      filtered = filtered.filter(result => 
+        new Date(result.completed_at) >= new Date(filters.dateFrom)
+      );
+    }
+    if (filters.dateTo) {
+      filtered = filtered.filter(result => 
+        new Date(result.completed_at) <= new Date(filters.dateTo + 'T23:59:59')
+      );
+    }
+
+    setFilteredResults(filtered);
+  };
 
   const exportToExcel = () => {
     const csvContent = [
       ['Student Name', 'Student ID', 'Test Title', 'Score', 'Total Questions', 'Correct Answers', 'Completion Date'].join(','),
-      ...testResults.map(result => {
+      ...filteredResults.map(result => {
         const test = tests.find(t => t.id === result.test_id);
         const profile = profiles.find(p => p.user_id === result.student_id);
         return [
@@ -52,12 +89,12 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests, profiles 
     return 'destructive';
   };
 
-  const averageScore = testResults.length > 0 
-    ? testResults.reduce((acc, result) => acc + result.score, 0) / testResults.length 
+  const averageScore = filteredResults.length > 0 
+    ? filteredResults.reduce((acc, result) => acc + result.score, 0) / filteredResults.length 
     : 0;
   
-  const passRate = testResults.length > 0 
-    ? (testResults.filter(result => result.score >= 60).length / testResults.length) * 100 
+  const passRate = filteredResults.length > 0 
+    ? (filteredResults.filter(result => result.score >= 60).length / filteredResults.length) * 100 
     : 0;
 
   const handleViewDetails = (result: any) => {
@@ -102,8 +139,13 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests, profiles 
             <Eye className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{testResults.length}</div>
-            <p className="text-xs text-muted-foreground">Test attempts</p>
+            <div className="text-2xl font-bold">{filteredResults.length}</div>
+            <p className="text-xs text-muted-foreground">
+              {filteredResults.length !== testResults.length ? 
+                `${filteredResults.length} of ${testResults.length} shown` : 
+                'Test attempts'
+              }
+            </p>
           </CardContent>
         </Card>
 
@@ -114,7 +156,9 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests, profiles 
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{averageScore.toFixed(1)}%</div>
-            <p className="text-xs text-muted-foreground">Class performance</p>
+            <p className="text-xs text-muted-foreground">
+              {filteredResults.length !== testResults.length ? 'Filtered results' : 'Class performance'}
+            </p>
           </CardContent>
         </Card>
 
@@ -125,10 +169,18 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests, profiles 
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{passRate.toFixed(1)}%</div>
-            <p className="text-xs text-muted-foreground">Students scoring ≥60%</p>
+            <p className="text-xs text-muted-foreground">
+              {filteredResults.length !== testResults.length ? 'Filtered results' : 'Students scoring ≥60%'}
+            </p>
           </CardContent>
         </Card>
       </div>
+
+      <ResultsFilter 
+        onFilterChange={handleFilterChange}
+        tests={tests}
+        showTestFilter={true}
+      />
 
       <Card>
         <CardHeader>
@@ -136,9 +188,11 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests, profiles 
           <CardDescription>Individual student performance across all tests</CardDescription>
         </CardHeader>
         <CardContent>
-          {testResults.length === 0 ? (
+          {filteredResults.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-gray-500">No test submissions yet.</p>
+              <p className="text-gray-500">
+                {testResults.length === 0 ? 'No test submissions yet.' : 'No results match your filters.'}
+              </p>
             </div>
           ) : (
             <Table>
@@ -154,7 +208,7 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests, profiles 
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {testResults.map((result, index) => {
+                {filteredResults.map((result, index) => {
                   const test = tests.find(t => t.id === result.test_id);
                   const studentName = getStudentName(result.student_id);
                   return (

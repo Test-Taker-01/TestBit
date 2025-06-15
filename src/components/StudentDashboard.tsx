@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FileText, BarChart, Clock, LogOut, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import FullScreenTestInterface from './FullScreenTestInterface';
+import ResultsFilter, { FilterState } from './ResultsFilter';
 
 interface StudentDashboardProps {
   onLogout: () => void;
@@ -27,6 +28,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState('tests');
   const [selectedTest, setSelectedTest] = useState<any>(null);
+  const [filteredResults, setFilteredResults] = useState(studentResults);
   const navigate = useNavigate();
 
   const averageScore = studentResults.length > 0 
@@ -35,6 +37,41 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
 
   const completedTests = studentResults.length;
   const availableTests = tests.length;
+
+  React.useEffect(() => {
+    setFilteredResults(studentResults);
+  }, [studentResults]);
+
+  const handleFilterChange = (filters: FilterState) => {
+    let filtered = [...studentResults];
+
+    // Filter by test
+    if (filters.testId) {
+      filtered = filtered.filter(result => result.test_id === filters.testId);
+    }
+
+    // Filter by score range
+    if (filters.minScore) {
+      filtered = filtered.filter(result => result.score >= parseInt(filters.minScore));
+    }
+    if (filters.maxScore) {
+      filtered = filtered.filter(result => result.score <= parseInt(filters.maxScore));
+    }
+
+    // Filter by date range
+    if (filters.dateFrom) {
+      filtered = filtered.filter(result => 
+        new Date(result.completed_at) >= new Date(filters.dateFrom)
+      );
+    }
+    if (filters.dateTo) {
+      filtered = filtered.filter(result => 
+        new Date(result.completed_at) <= new Date(filters.dateTo + 'T23:59:59')
+      );
+    }
+
+    setFilteredResults(filtered);
+  };
 
   if (selectedTest) {
     return (
@@ -161,13 +198,22 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
           <TabsContent value="results">
             <div className="space-y-6">
               <h2 className="text-xl font-semibold">My Test Results</h2>
-              {studentResults.length === 0 ? (
+              
+              <ResultsFilter 
+                onFilterChange={handleFilterChange}
+                tests={tests}
+                showTestFilter={true}
+              />
+
+              {filteredResults.length === 0 ? (
                 <div className="text-center py-8">
-                  <p className="text-gray-500">No test results yet.</p>
+                  <p className="text-gray-500">
+                    {studentResults.length === 0 ? 'No test results yet.' : 'No results match your filters.'}
+                  </p>
                 </div>
               ) : (
                 <div className="grid gap-4">
-                  {studentResults.map((result) => {
+                  {filteredResults.map((result) => {
                     const test = tests.find(t => t.id === result.test_id);
                     return (
                       <Card key={result.id}>
