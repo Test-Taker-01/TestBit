@@ -14,10 +14,10 @@ const StudentsList: React.FC<StudentsListProps> = ({ profiles }) => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold">Registered Students</h2>
+        <h2 className="text-xl font-semibold header-text">Registered Students</h2>
         <div className="flex items-center gap-2 text-sm text-gray-600">
           <Users size={16} />
-          {students.length} student{students.length !== 1 ? 's' : ''} registered
+          <span className="proper-line-height">{students.length} student{students.length !== 1 ? 's' : ''} registered</span>
         </div>
       </div>
 
@@ -25,8 +25,8 @@ const StudentsList: React.FC<StudentsListProps> = ({ profiles }) => {
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-8">
             <Users size={48} className="text-gray-400 mb-4" />
-            <CardTitle className="text-lg text-gray-600 mb-2">No Students Yet</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-lg text-gray-600 mb-2 header-text">No Students Yet</CardTitle>
+            <CardDescription className="proper-line-height">
               Students will appear here once they register for your platform.
             </CardDescription>
           </CardContent>
@@ -34,8 +34,8 @@ const StudentsList: React.FC<StudentsListProps> = ({ profiles }) => {
       ) : (
         <Card>
           <CardHeader>
-            <CardTitle>Student Directory</CardTitle>
-            <CardDescription>
+            <CardTitle className="header-text">Student Directory</CardTitle>
+            <CardDescription className="proper-line-height">
               View all registered students and their contact information
             </CardDescription>
           </CardHeader>
@@ -43,10 +43,10 @@ const StudentsList: React.FC<StudentsListProps> = ({ profiles }) => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Student ID</TableHead>
-                  <TableHead>Registration Date</TableHead>
+                  <TableHead className="proper-line-height">Name</TableHead>
+                  <TableHead className="proper-line-height">Email</TableHead>
+                  <TableHead className="proper-line-height">Student ID</TableHead>
+                  <TableHead className="proper-line-height">Registration Date</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -55,22 +55,22 @@ const StudentsList: React.FC<StudentsListProps> = ({ profiles }) => {
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <User size={16} className="text-gray-400" />
-                        <span className="font-medium">{student.name}</span>
+                        <span className="font-medium proper-line-height">{student.name}</span>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <Mail size={16} className="text-gray-400" />
-                        <span>{student.email}</span>
+                        <span className="proper-line-height">{student.email}</span>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">
+                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm proper-line-height">
                         {student.student_id || 'N/A'}
                       </span>
                     </TableCell>
                     <TableCell>
-                      <span className="text-gray-600">
+                      <span className="text-gray-600 proper-line-height">
                         {new Date(student.created_at).toLocaleDateString()}
                       </span>
                     </TableCell>

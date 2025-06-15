@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,10 +30,10 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
                   <GraduationCap size={48} className="text-white" />
                 </div>
               </div>
-              <CardTitle className="text-3xl text-gray-900 mb-4">
+              <CardTitle className="text-3xl text-gray-900 mb-4 header-text">
                 Who are you?
               </CardTitle>
-              <CardDescription className="text-lg text-gray-600">
+              <CardDescription className="text-lg text-gray-600 proper-line-height">
                 Please select your role to continue with the appropriate experience
               </CardDescription>
             </CardHeader>
@@ -46,8 +47,8 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
                     <div className="flex justify-center mb-4">
                       <User className="text-blue-600" size={48} />
                     </div>
-                    <CardTitle className="text-xl">Student</CardTitle>
-                    <CardDescription>
+                    <CardTitle className="text-xl header-text">Student</CardTitle>
+                    <CardDescription className="proper-line-height">
                       Take tests, view your results, and track your progress
                     </CardDescription>
                   </CardHeader>
@@ -61,8 +62,8 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
                     <div className="flex justify-center mb-4">
                       <UserCheck className="text-green-600" size={48} />
                     </div>
-                    <CardTitle className="text-xl">Teacher</CardTitle>
-                    <CardDescription>
+                    <CardTitle className="text-xl header-text">Teacher</CardTitle>
+                    <CardDescription className="proper-line-height">
                       Create tests, manage students, and analyze performance
                     </CardDescription>
                   </CardHeader>
@@ -73,7 +74,7 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
                 <Button 
                   variant="outline" 
                   onClick={() => setShowRoleSelection(false)}
-                  className="text-gray-600"
+                  className="text-gray-600 proper-line-height"
                 >
                   Back
                 </Button>
@@ -96,11 +97,11 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
             </div>
           </div>
           
-          <h1 className="text-5xl font-bold text-gray-900 mb-6">
+          <h1 className="text-5xl font-bold text-gray-900 mb-6 welcome-text">
             Welcome to <span className="text-blue-600">EduTest</span>
           </h1>
           
-          <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto proper-line-height">
             A comprehensive online testing platform that empowers educators to create, manage, and deliver assessments 
             while providing students with an intuitive learning experience. Transform the way you teach and learn with our modern, 
             user-friendly interface designed for academic excellence.
@@ -109,7 +110,7 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
           <Button 
             onClick={handleGetStarted}
             size="lg"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg proper-line-height"
           >
             Get Started
           </Button>
@@ -122,8 +123,8 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
               <div className="flex justify-center mb-4">
                 <BookOpen className="text-blue-600" size={40} />
               </div>
-              <CardTitle>Take Tests</CardTitle>
-              <CardDescription>
+              <CardTitle className="header-text">Take Tests</CardTitle>
+              <CardDescription className="proper-line-height">
                 Access comprehensive assessments with multiple question types and get instant feedback on your performance.
               </CardDescription>
             </CardHeader>
@@ -134,8 +135,8 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
               <div className="flex justify-center mb-4">
                 <Users className="text-green-600" size={40} />
               </div>
-              <CardTitle>Track Progress</CardTitle>
-              <CardDescription>
+              <CardTitle className="header-text">Track Progress</CardTitle>
+              <CardDescription className="proper-line-height">
                 Monitor your learning journey with detailed results, performance analytics, and personalized insights.
               </CardDescription>
             </CardHeader>
@@ -146,8 +147,8 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
               <div className="flex justify-center mb-4">
                 <Award className="text-purple-600" size={40} />
               </div>
-              <CardTitle>Achieve Excellence</CardTitle>
-              <CardDescription>
+              <CardTitle className="header-text">Achieve Excellence</CardTitle>
+              <CardDescription className="proper-line-height">
                 Improve your knowledge and skills through structured assessments and continuous learning opportunities.
               </CardDescription>
             </CardHeader>
@@ -159,13 +160,13 @@ const HomePage: React.FC<HomePageProps> = ({ onGetStarted }) => {
           <CardContent className="p-8 text-center">
             <div className="mb-6">
               <div className="text-6xl text-blue-600 mb-4">"</div>
-              <blockquote className="text-2xl font-medium text-gray-800 italic leading-relaxed">
+              <blockquote className="text-2xl font-medium text-gray-800 italic leading-relaxed proper-line-height">
                 Education is the most powerful weapon which you can use to change the world.
               </blockquote>
             </div>
             <div className="border-t pt-6">
-              <p className="text-lg font-semibold text-gray-700">Nelson Mandela</p>
-              <p className="text-gray-500">Former President of South Africa & Nobel Peace Prize Winner</p>
+              <p className="text-lg font-semibold text-gray-700 proper-line-height">Nelson Mandela</p>
+              <p className="text-gray-500 proper-line-height">Former President of South Africa & Nobel Peace Prize Winner</p>
             </div>
           </CardContent>
         </Card>
