@@ -1,8 +1,8 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Clock, ArrowLeft, ArrowRight, Flag, Maximize, AlertTriangle } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
@@ -288,48 +288,52 @@ const FullScreenTestInterface: React.FC<FullScreenTestInterfaceProps> = ({ test,
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-4">
-                {currentQuestion.image && (
-                  <div className="flex justify-center">
-                    <img
-                      src={currentQuestion.image}
-                      alt="Question"
-                      className="max-w-full max-h-64 object-contain rounded border"
-                    />
-                  </div>
-                )}
-
-                <div className="space-y-3">
-                  {currentQuestion.options.map((option: string, index: number) => (
-                    <button
-                      key={index}
-                      className={`w-full p-4 text-left border rounded-lg transition-colors ${
-                        answers[currentQuestionIndex] === index
-                          ? 'border-blue-500 bg-blue-50 text-gray-900'
-                          : 'border-gray-300 hover:border-gray-400 bg-white text-gray-700'
-                      }`}
-                      onClick={() => handleAnswerSelect(index)}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                            answers[currentQuestionIndex] === index
-                              ? 'border-blue-500 bg-blue-500'
-                              : 'border-gray-400'
-                          }`}
-                        >
-                          {answers[currentQuestionIndex] === index && (
-                            <div className="w-2 h-2 bg-white rounded-full" />
-                          )}
-                        </div>
-                        <span className="font-medium text-gray-700">
-                          {String.fromCharCode(65 + index)}.
-                        </span>
-                        <span>{option}</span>
+              <CardContent>
+                <ScrollArea className="h-[500px] w-full">
+                  <div className="space-y-4 pr-4">
+                    {currentQuestion.image && (
+                      <div className="flex justify-center">
+                        <img
+                          src={currentQuestion.image}
+                          alt="Question"
+                          className="max-w-full max-h-64 object-contain rounded border"
+                        />
                       </div>
-                    </button>
-                  ))}
-                </div>
+                    )}
+
+                    <div className="space-y-3">
+                      {currentQuestion.options.map((option: string, index: number) => (
+                        <button
+                          key={index}
+                          className={`w-full p-4 text-left border rounded-lg transition-colors ${
+                            answers[currentQuestionIndex] === index
+                              ? 'border-blue-500 bg-blue-50 text-gray-900'
+                              : 'border-gray-300 hover:border-gray-400 bg-white text-gray-700'
+                          }`}
+                          onClick={() => handleAnswerSelect(index)}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div
+                              className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                                answers[currentQuestionIndex] === index
+                                  ? 'border-blue-500 bg-blue-500'
+                                  : 'border-gray-400'
+                              }`}
+                            >
+                              {answers[currentQuestionIndex] === index && (
+                                <div className="w-2 h-2 bg-white rounded-full" />
+                              )}
+                            </div>
+                            <span className="font-medium text-gray-700">
+                              {String.fromCharCode(65 + index)}.
+                            </span>
+                            <span>{option}</span>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </ScrollArea>
 
                 <div className="flex justify-between pt-4">
                   <Button
@@ -382,32 +386,34 @@ const FullScreenTestInterface: React.FC<FullScreenTestInterfaceProps> = ({ test,
                 <CardTitle className="text-lg text-gray-900">Question Navigator</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-5 gap-2">
-                  {test.questions.map((_: any, index: number) => {
-                    let buttonClass = '';
-                    if (index === currentQuestionIndex) {
-                      buttonClass = 'bg-blue-600 text-white border-blue-600';
-                    } else if (answers[index] !== -1) {
-                      buttonClass = 'bg-green-500 text-white border-green-500';
-                    } else if (markedForReview[index]) {
-                      buttonClass = 'bg-yellow-500 text-white border-yellow-500';
-                    } else if (flagged[index]) {
-                      buttonClass = 'bg-red-500 text-white border-red-500';
-                    } else {
-                      buttonClass = 'bg-gray-400 text-white border-gray-400';
-                    }
+                <ScrollArea className="h-[300px] w-full">
+                  <div className="grid grid-cols-5 gap-2 pr-4">
+                    {test.questions.map((_: any, index: number) => {
+                      let buttonClass = '';
+                      if (index === currentQuestionIndex) {
+                        buttonClass = 'bg-blue-600 text-white border-blue-600';
+                      } else if (answers[index] !== -1) {
+                        buttonClass = 'bg-green-500 text-white border-green-500';
+                      } else if (markedForReview[index]) {
+                        buttonClass = 'bg-yellow-500 text-white border-yellow-500';
+                      } else if (flagged[index]) {
+                        buttonClass = 'bg-red-500 text-white border-red-500';
+                      } else {
+                        buttonClass = 'bg-gray-400 text-white border-gray-400';
+                      }
 
-                    return (
-                      <button
-                        key={index}
-                        className={`w-10 h-10 rounded text-sm font-medium transition-colors border-2 ${buttonClass}`}
-                        onClick={() => setCurrentQuestionIndex(index)}
-                      >
-                        {index + 1}
-                      </button>
-                    );
-                  })}
-                </div>
+                      return (
+                        <button
+                          key={index}
+                          className={`w-10 h-10 rounded text-sm font-medium transition-colors border-2 ${buttonClass}`}
+                          onClick={() => setCurrentQuestionIndex(index)}
+                        >
+                          {index + 1}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </ScrollArea>
                 <div className="mt-4 space-y-2 text-xs text-gray-700">
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 bg-green-500 rounded"></div>
