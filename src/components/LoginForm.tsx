@@ -1,19 +1,19 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { User, GraduationCap, Eye, EyeClosed } from 'lucide-react';
+import { User, GraduationCap, Eye, EyeClosed, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 
 interface LoginFormProps {
   selectedRole?: 'student' | 'teacher' | null;
+  onBack?: () => void;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ selectedRole }) => {
+const LoginForm: React.FC<LoginFormProps> = ({ selectedRole, onBack }) => {
   const { signIn, signUp } = useAuth();
   const [adminCredentials, setAdminCredentials] = useState({ email: '', password: '' });
   const [studentCredentials, setStudentCredentials] = useState({ email: '', password: '' });
@@ -105,6 +105,20 @@ const LoginForm: React.FC<LoginFormProps> = ({ selectedRole }) => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
+          <div className="flex items-center justify-between mb-4">
+            {onBack && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={onBack}
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+              >
+                <ArrowLeft size={16} />
+                Back
+              </Button>
+            )}
+            <div className="flex-1" />
+          </div>
           <CardTitle className="text-2xl font-bold text-gray-900">TestBit Platform</CardTitle>
           <CardDescription>
             {isLoginMode ? 

@@ -393,6 +393,11 @@ const Index = () => {
     setShowLogin(true);
   };
 
+  const handleBackToHome = () => {
+    setShowLogin(false);
+    setSelectedRole(null);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -408,7 +413,7 @@ const Index = () => {
     if (!showLogin) {
       return <HomePage onGetStarted={handleGetStarted} />;
     }
-    return <LoginForm selectedRole={selectedRole} />;
+    return <LoginForm selectedRole={selectedRole} onBack={handleBackToHome} />;
   }
 
   if (profile.user_type === 'admin') {
