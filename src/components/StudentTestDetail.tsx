@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -167,7 +166,7 @@ const StudentTestDetail: React.FC<StudentTestDetailProps> = ({ test, result, onB
         </CardContent>
       </Card>
 
-      {/* Question Review */}
+      {/* Question Review - Fixed validation logic */}
       <Card className="bg-white/80 backdrop-blur-sm border-0 modern-shadow">
         <CardHeader>
           <CardTitle className="text-xl bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent flex items-center gap-3">
@@ -182,8 +181,19 @@ const StudentTestDetail: React.FC<StudentTestDetailProps> = ({ test, result, onB
           <div className="space-y-6">
             {test.questions.map((question: any, index: number) => {
               const userAnswer = result.answers.find((answer: any) => answer.questionIndex === index);
-              // Fix: Compare user's selected answer with the correct answer
-              const isCorrect = userAnswer?.selectedAnswer === question.correctAnswer;
+              
+              // Debug logging
+              console.log(`Question ${index + 1}:`, {
+                question: question.question,
+                userSelectedAnswer: userAnswer?.selectedAnswer,
+                correctAnswer: question.correctAnswer,
+                userAnswerData: userAnswer
+              });
+              
+              // Fix: Ensure both values are numbers and compare properly
+              const userSelectedIndex = Number(userAnswer?.selectedAnswer);
+              const correctAnswerIndex = Number(question.correctAnswer);
+              const isCorrect = !isNaN(userSelectedIndex) && !isNaN(correctAnswerIndex) && userSelectedIndex === correctAnswerIndex;
               
               return (
                 <Card 
@@ -211,8 +221,8 @@ const StudentTestDetail: React.FC<StudentTestDetailProps> = ({ test, result, onB
                         
                         <div className="space-y-2">
                           {question.options.map((option: string, optionIndex: number) => {
-                            const isUserAnswer = userAnswer?.selectedAnswer === optionIndex;
-                            const isCorrectAnswer = question.correctAnswer === optionIndex;
+                            const isUserAnswer = userSelectedIndex === optionIndex;
+                            const isCorrectAnswer = correctAnswerIndex === optionIndex;
                             
                             let optionClass = 'p-3 rounded-lg border ';
                             if (isCorrectAnswer) {
