@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, FileText, BarChart, Users, BookOpen, LogOut } from 'lucide-react';
+import { Plus, FileText, BarChart, Users, BookOpen, LogOut, User } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import TestCreator from './TestCreator';
 import TestResults from './TestResults';
 import ResourceManager from './ResourceManager';
@@ -31,8 +32,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState('overview');
   const [showTestCreator, setShowTestCreator] = useState(false);
+  const navigate = useNavigate();
 
-  const totalStudents = new Set(testResults.map(result => result.studentId)).size;
+  const totalStudents = new Set(testResults.map(result => result.student_id)).size;
   const averageScore = testResults.length > 0 
     ? testResults.reduce((acc, result) => acc + result.score, 0) / testResults.length 
     : 0;
@@ -42,10 +44,20 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
       <header className="bg-white shadow-sm border-b">
         <div className="px-6 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gray-900">Teacher Dashboard</h1>
-          <Button onClick={onLogout} variant="outline" className="flex items-center gap-2">
-            <LogOut size={16} />
-            Logout
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button 
+              onClick={() => navigate('/profile')} 
+              variant="outline" 
+              className="flex items-center gap-2"
+            >
+              <User size={16} />
+              Profile
+            </Button>
+            <Button onClick={onLogout} variant="outline" className="flex items-center gap-2">
+              <LogOut size={16} />
+              Logout
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -132,7 +144,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     <CardHeader>
                       <CardTitle>{test.title}</CardTitle>
                       <CardDescription>
-                        {test.questions.length} questions • Created {new Date(test.createdAt).toLocaleDateString()}
+                        {test.questions.length} questions • Created {new Date(test.created_at).toLocaleDateString()}
                       </CardDescription>
                     </CardHeader>
                     <CardContent>

@@ -23,16 +23,16 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests, profiles 
     const csvContent = [
       ['Student Name', 'Student ID', 'Test Title', 'Score', 'Total Questions', 'Correct Answers', 'Completion Date'].join(','),
       ...testResults.map(result => {
-        const test = tests.find(t => t.id === result.testId);
-        const profile = profiles.find(p => p.user_id === result.studentId);
+        const test = tests.find(t => t.id === result.test_id);
+        const profile = profiles.find(p => p.user_id === result.student_id);
         return [
           profile?.name || 'Unknown Student',
-          profile?.student_id || result.studentId,
+          profile?.student_id || result.student_id,
           test?.title || 'Unknown Test',
           `${result.score}%`,
-          result.totalQuestions,
-          result.correctAnswers,
-          new Date(result.completedAt).toLocaleDateString()
+          result.total_questions,
+          result.correct_answers,
+          new Date(result.completed_at).toLocaleDateString()
         ].join(',');
       })
     ].join('\n');
@@ -61,7 +61,7 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests, profiles 
     : 0;
 
   const handleViewDetails = (result: any) => {
-    const test = tests.find(t => t.id === result.testId);
+    const test = tests.find(t => t.id === result.test_id);
     setSelectedResult(result);
     setSelectedTest(test);
   };
@@ -76,7 +76,7 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests, profiles 
       <DetailedTestResult
         result={selectedResult}
         test={selectedTest}
-        studentName={getStudentName(selectedResult.studentId)}
+        studentName={getStudentName(selectedResult.student_id)}
         onBack={() => {
           setSelectedResult(null);
           setSelectedTest(null);
@@ -155,8 +155,8 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests, profiles 
               </TableHeader>
               <TableBody>
                 {testResults.map((result, index) => {
-                  const test = tests.find(t => t.id === result.testId);
-                  const studentName = getStudentName(result.studentId);
+                  const test = tests.find(t => t.id === result.test_id);
+                  const studentName = getStudentName(result.student_id);
                   return (
                     <TableRow key={index}>
                       <TableCell className="font-medium">{studentName}</TableCell>
@@ -166,9 +166,9 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests, profiles 
                           {result.score}%
                         </Badge>
                       </TableCell>
-                      <TableCell>{result.totalQuestions}</TableCell>
-                      <TableCell>{result.correctAnswers}</TableCell>
-                      <TableCell>{new Date(result.completedAt).toLocaleDateString()}</TableCell>
+                      <TableCell>{result.total_questions}</TableCell>
+                      <TableCell>{result.correct_answers}</TableCell>
+                      <TableCell>{new Date(result.completed_at).toLocaleDateString()}</TableCell>
                       <TableCell>
                         <Button 
                           variant="outline" 
