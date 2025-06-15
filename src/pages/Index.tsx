@@ -23,8 +23,27 @@ const Index = () => {
       fetchTests();
       fetchTestResults();
       fetchProfiles();
+      fetchResources();
     }
   }, [user, profile]);
+
+  const fetchResources = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('resources')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching resources:', error);
+        return;
+      }
+
+      setResources(data || []);
+    } catch (error) {
+      console.error('Error fetching resources:', error);
+    }
+  };
 
   const fetchProfiles = async () => {
     try {
@@ -249,12 +268,49 @@ const Index = () => {
     }
   };
 
-  const handleAddResource = (resource: any) => {
-    setResources([...resources, resource]);
-    toast({
-      title: "Resource Added",
-      description: `Resource "${resource.title}" has been added successfully`,
-    });
+  const handleAddResource = async (resource: any) => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('resources')
+        .insert([
+          {
+            title: resource.title,
+            description: resource.description,
+            subject: resource.subject,
+            course: resource.course,
+            type: resource.type,
+            drive_link: resource.driveLink,
+            content: resource.content,
+            created_by: user.id
+          }
+        ])
+        .select()
+        .single();
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Failed to add resource: " + error.message,
+          variant: "destructive"
+        });
+        return;
+      }
+
+      setResources([data, ...resources]);
+      toast({
+        title: "Resource Added",
+        description: `Resource "${resource.title}" has been added successfully`,
+      });
+    } catch (error) {
+      console.error('Error adding resource:', error);
+      toast({
+        title: "Error",
+        description: "Failed to add resource",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleGetStarted = (role?: 'student' | 'teacher') => {

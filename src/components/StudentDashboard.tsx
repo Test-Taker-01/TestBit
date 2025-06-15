@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,6 +6,7 @@ import { FileText, BarChart, Clock, LogOut, User, Trophy, Target, TrendingUp, St
 import { useNavigate } from 'react-router-dom';
 import FullScreenTestInterface from './FullScreenTestInterface';
 import StudentTestDetail from './StudentTestDetail';
+import ResourceManager from './ResourceManager';
 
 interface StudentDashboardProps {
   onLogout: () => void;
@@ -340,53 +340,11 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
           </TabsContent>
 
           <TabsContent value="resources">
-            <div className="space-y-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl modern-shadow">
-                  <FileText size={24} className="text-white" />
-                </div>
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent header-text">
-                  Resources
-                </h2>
-              </div>
-              {resources.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="p-8 bg-white/90 backdrop-blur-sm rounded-2xl modern-shadow max-w-md mx-auto">
-                    <div className="p-4 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full w-fit mx-auto mb-6">
-                      <FileText className="h-12 w-12 text-purple-500" />
-                    </div>
-                    <p className="text-gray-600 text-xl font-semibold mb-2 proper-line-height">No resources available yet.</p>
-                    <p className="text-gray-500 text-sm proper-line-height">Check back later for study materials and resources. 📖</p>
-                  </div>
-                </div>
-              ) : (
-                <div className="grid gap-6">
-                  {resources.map((resource) => (
-                    <Card key={resource.id} className="bg-white/90 backdrop-blur-sm hover-lift border-0 modern-shadow transition-all duration-300">
-                      <CardHeader>
-                        <CardTitle className="flex items-center gap-3 text-gray-800">
-                          <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg">
-                            <FileText size={18} className="text-white" />
-                          </div>
-                          <span className="text-xl font-bold header-text">{resource.title}</span>
-                        </CardTitle>
-                        <CardDescription className="text-gray-600 font-medium ml-12 proper-line-height">{resource.description}</CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <a 
-                          href={resource.url} 
-                          target="_blank" 
-                          rel="noopener noreferrer" 
-                          className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-300 modern-shadow text-sm font-semibold hover-lift proper-line-height"
-                        >
-                          📄 View Resource
-                        </a>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              )}
-            </div>
+            <ResourceManager
+              resources={resources}
+              onAddResource={() => {}} // Students can't add resources
+              userType="student"
+            />
           </TabsContent>
         </Tabs>
       </div>
