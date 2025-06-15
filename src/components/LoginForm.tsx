@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -102,8 +103,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ selectedRole, onBack }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center classic-gradient">
+      <Card className="w-full max-w-md bg-card/95 backdrop-blur-sm border-accent">
         <CardHeader className="text-center">
           <div className="flex items-center justify-between mb-4">
             {onBack && (
@@ -111,7 +112,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ selectedRole, onBack }) => {
                 variant="ghost" 
                 size="sm" 
                 onClick={onBack}
-                className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+                className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
               >
                 <ArrowLeft size={16} />
                 Back
@@ -119,8 +120,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ selectedRole, onBack }) => {
             )}
             <div className="flex-1" />
           </div>
-          <CardTitle className="text-2xl font-bold text-gray-900">TestBit Platform</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-2xl font-bold text-foreground">TestBit Platform</CardTitle>
+          <CardDescription className="text-muted-foreground">
             {isLoginMode ? 
               (selectedRole === 'teacher' ? 'Teacher Login' : 
                selectedRole === 'student' ? 'Student Login' : 
@@ -132,13 +133,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ selectedRole, onBack }) => {
         </CardHeader>
         <CardContent>
           <div className="flex justify-center mb-6">
-            <div className="bg-gray-100 p-1 rounded-lg">
+            <div className="bg-accent p-1 rounded-lg">
               <button
                 onClick={() => setIsLoginMode(true)}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                   isLoginMode 
-                    ? 'bg-white text-gray-900 shadow-sm' 
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'bg-card text-foreground shadow-sm' 
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 Login
@@ -147,8 +148,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ selectedRole, onBack }) => {
                 onClick={() => setIsLoginMode(false)}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                   !isLoginMode 
-                    ? 'bg-white text-gray-900 shadow-sm' 
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'bg-card text-foreground shadow-sm' 
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 Sign Up
@@ -161,7 +162,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ selectedRole, onBack }) => {
             <div className="w-full">
               {selectedRole === 'student' ? (
                 <div className="space-y-4">
-                  <div className="flex items-center justify-center gap-2 mb-4 text-blue-600">
+                  <div className="flex items-center justify-center gap-2 mb-4 text-amber-700">
                     <GraduationCap size={20} />
                     <span className="font-medium">Student {isLoginMode ? 'Login' : 'Registration'}</span>
                   </div>
@@ -169,17 +170,18 @@ const LoginForm: React.FC<LoginFormProps> = ({ selectedRole, onBack }) => {
                   {isLoginMode ? (
                     <form onSubmit={handleStudentLogin} className="space-y-4">
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Email</label>
+                        <label className="text-sm font-medium text-foreground">Email</label>
                         <Input
                           type="email"
                           placeholder="Enter your email"
                           value={studentCredentials.email}
                           onChange={(e) => setStudentCredentials({...studentCredentials, email: e.target.value})}
                           required
+                          className="bg-card border-accent text-foreground"
                         />
                       </div>
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Password</label>
+                        <label className="text-sm font-medium text-foreground">Password</label>
                         <div className="relative">
                           <Input
                             type={showStudentPassword ? "text" : "password"}
@@ -187,44 +189,47 @@ const LoginForm: React.FC<LoginFormProps> = ({ selectedRole, onBack }) => {
                             value={studentCredentials.password}
                             onChange={(e) => setStudentCredentials({...studentCredentials, password: e.target.value})}
                             required
+                            className="bg-card border-accent text-foreground"
                           />
                           <button
                             type="button"
                             onClick={() => setShowStudentPassword(!showStudentPassword)}
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
                           >
                             {showStudentPassword ? <EyeClosed size={20} /> : <Eye size={20} />}
                           </button>
                         </div>
                       </div>
-                      <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
+                      <Button type="submit" className="w-full bg-amber-700 hover:bg-amber-800 text-white">
                         Login as Student
                       </Button>
                     </form>
                   ) : (
                     <form onSubmit={handleStudentSignup} className="space-y-4">
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Full Name</label>
+                        <label className="text-sm font-medium text-foreground">Full Name</label>
                         <Input
                           type="text"
                           placeholder="Enter your full name"
                           value={studentSignupData.name}
                           onChange={(e) => setStudentSignupData({...studentSignupData, name: e.target.value})}
                           required
+                          className="bg-card border-accent text-foreground"
                         />
                       </div>
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Email</label>
+                        <label className="text-sm font-medium text-foreground">Email</label>
                         <Input
                           type="email"
                           placeholder="Enter your email"
                           value={studentSignupData.email}
                           onChange={(e) => setStudentSignupData({...studentSignupData, email: e.target.value})}
                           required
+                          className="bg-card border-accent text-foreground"
                         />
                       </div>
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Password</label>
+                        <label className="text-sm font-medium text-foreground">Password</label>
                         <div className="relative">
                           <Input
                             type={showStudentSignupPassword ? "text" : "password"}
@@ -232,18 +237,19 @@ const LoginForm: React.FC<LoginFormProps> = ({ selectedRole, onBack }) => {
                             value={studentSignupData.password}
                             onChange={(e) => setStudentSignupData({...studentSignupData, password: e.target.value})}
                             required
+                            className="bg-card border-accent text-foreground"
                           />
                           <button
                             type="button"
                             onClick={() => setShowStudentSignupPassword(!showStudentSignupPassword)}
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
                           >
                             {showStudentSignupPassword ? <EyeClosed size={20} /> : <Eye size={20} />}
                           </button>
                         </div>
                       </div>
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Confirm Password</label>
+                        <label className="text-sm font-medium text-foreground">Confirm Password</label>
                         <div className="relative">
                           <Input
                             type={showStudentSignupConfirmPassword ? "text" : "password"}
@@ -251,17 +257,18 @@ const LoginForm: React.FC<LoginFormProps> = ({ selectedRole, onBack }) => {
                             value={studentSignupData.confirmPassword}
                             onChange={(e) => setStudentSignupData({...studentSignupData, confirmPassword: e.target.value})}
                             required
+                            className="bg-card border-accent text-foreground"
                           />
                           <button
                             type="button"
                             onClick={() => setShowStudentSignupConfirmPassword(!showStudentSignupConfirmPassword)}
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
                           >
                             {showStudentSignupConfirmPassword ? <EyeClosed size={20} /> : <Eye size={20} />}
                           </button>
                         </div>
                       </div>
-                      <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
+                      <Button type="submit" className="w-full bg-amber-700 hover:bg-amber-800 text-white">
                         Sign Up as Student
                       </Button>
                     </form>
@@ -269,7 +276,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ selectedRole, onBack }) => {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <div className="flex items-center justify-center gap-2 mb-4 text-indigo-600">
+                  <div className="flex items-center justify-center gap-2 mb-4 text-amber-800">
                     <User size={20} />
                     <span className="font-medium">Teacher {isLoginMode ? 'Login' : 'Registration'}</span>
                   </div>
@@ -277,17 +284,18 @@ const LoginForm: React.FC<LoginFormProps> = ({ selectedRole, onBack }) => {
                   {isLoginMode ? (
                     <form onSubmit={handleAdminLogin} className="space-y-4">
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Email</label>
+                        <label className="text-sm font-medium text-foreground">Email</label>
                         <Input
                           type="email"
                           placeholder="Enter your email"
                           value={adminCredentials.email}
                           onChange={(e) => setAdminCredentials({...adminCredentials, email: e.target.value})}
                           required
+                          className="bg-card border-accent text-foreground"
                         />
                       </div>
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Password</label>
+                        <label className="text-sm font-medium text-foreground">Password</label>
                         <div className="relative">
                           <Input
                             type={showAdminPassword ? "text" : "password"}
@@ -295,57 +303,61 @@ const LoginForm: React.FC<LoginFormProps> = ({ selectedRole, onBack }) => {
                             value={adminCredentials.password}
                             onChange={(e) => setAdminCredentials({...adminCredentials, password: e.target.value})}
                             required
+                            className="bg-card border-accent text-foreground"
                           />
                           <button
                             type="button"
                             onClick={() => setShowAdminPassword(!showAdminPassword)}
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
                           >
                             {showAdminPassword ? <EyeClosed size={20} /> : <Eye size={20} />}
                           </button>
                         </div>
                       </div>
-                      <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700">
+                      <Button type="submit" className="w-full bg-amber-800 hover:bg-amber-900 text-white">
                         Login as Teacher
                       </Button>
                     </form>
                   ) : (
                     <form onSubmit={handleAdminSignup} className="space-y-4">
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Full Name</label>
+                        <label className="text-sm font-medium text-foreground">Full Name</label>
                         <Input
                           type="text"
                           placeholder="Enter your full name"
                           value={adminSignupData.name}
                           onChange={(e) => setAdminSignupData({...adminSignupData, name: e.target.value})}
                           required
+                          className="bg-card border-accent text-foreground"
                         />
                       </div>
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Email</label>
+                        <label className="text-sm font-medium text-foreground">Email</label>
                         <Input
                           type="email"
                           placeholder="Enter your email"
                           value={adminSignupData.email}
                           onChange={(e) => setAdminSignupData({...adminSignupData, email: e.target.value})}
                           required
+                          className="bg-card border-accent text-foreground"
                         />
                       </div>
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Special Teacher Code</label>
+                        <label className="text-sm font-medium text-foreground">Special Teacher Code</label>
                         <Input
                           type="text"
                           placeholder="Enter the special teacher code"
                           value={adminSignupData.specialCode}
                           onChange={(e) => setAdminSignupData({...adminSignupData, specialCode: e.target.value})}
                           required
+                          className="bg-card border-accent text-foreground"
                         />
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-muted-foreground mt-1">
                           Contact an administrator to get the special code required for teacher registration.
                         </p>
                       </div>
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Password</label>
+                        <label className="text-sm font-medium text-foreground">Password</label>
                         <div className="relative">
                           <Input
                             type={showAdminSignupPassword ? "text" : "password"}
@@ -353,18 +365,19 @@ const LoginForm: React.FC<LoginFormProps> = ({ selectedRole, onBack }) => {
                             value={adminSignupData.password}
                             onChange={(e) => setAdminSignupData({...adminSignupData, password: e.target.value})}
                             required
+                            className="bg-card border-accent text-foreground"
                           />
                           <button
                             type="button"
                             onClick={() => setShowAdminSignupPassword(!showAdminSignupPassword)}
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
                           >
                             {showAdminSignupPassword ? <EyeClosed size={20} /> : <Eye size={20} />}
                           </button>
                         </div>
                       </div>
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Confirm Password</label>
+                        <label className="text-sm font-medium text-foreground">Confirm Password</label>
                         <div className="relative">
                           <Input
                             type={showAdminSignupConfirmPassword ? "text" : "password"}
@@ -372,17 +385,18 @@ const LoginForm: React.FC<LoginFormProps> = ({ selectedRole, onBack }) => {
                             value={adminSignupData.confirmPassword}
                             onChange={(e) => setAdminSignupData({...adminSignupData, confirmPassword: e.target.value})}
                             required
+                            className="bg-card border-accent text-foreground"
                           />
                           <button
                             type="button"
                             onClick={() => setShowAdminSignupConfirmPassword(!showAdminSignupConfirmPassword)}
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
                           >
                             {showAdminSignupConfirmPassword ? <EyeClosed size={20} /> : <Eye size={20} />}
                           </button>
                         </div>
                       </div>
-                      <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700">
+                      <Button type="submit" className="w-full bg-amber-800 hover:bg-amber-900 text-white">
                         Sign Up as Teacher
                       </Button>
                     </form>
@@ -393,12 +407,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ selectedRole, onBack }) => {
           ) : (
             // Show both tabs when no role is selected (fallback)
             <Tabs defaultValue={defaultTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="student" className="flex items-center gap-2">
+              <TabsList className="grid w-full grid-cols-2 bg-accent">
+                <TabsTrigger value="student" className="flex items-center gap-2 data-[state=active]:bg-card">
                   <GraduationCap size={16} />
                   Student
                 </TabsTrigger>
-                <TabsTrigger value="admin" className="flex items-center gap-2">
+                <TabsTrigger value="admin" className="flex items-center gap-2 data-[state=active]:bg-card">
                   <User size={16} />
                   Teacher
                 </TabsTrigger>
@@ -410,17 +424,18 @@ const LoginForm: React.FC<LoginFormProps> = ({ selectedRole, onBack }) => {
                   <TabsContent value="student">
                     <form onSubmit={handleStudentLogin} className="space-y-4">
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Email</label>
+                        <label className="text-sm font-medium text-foreground">Email</label>
                         <Input
                           type="email"
                           placeholder="Enter your email"
                           value={studentCredentials.email}
                           onChange={(e) => setStudentCredentials({...studentCredentials, email: e.target.value})}
                           required
+                          className="bg-card border-accent text-foreground"
                         />
                       </div>
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Password</label>
+                        <label className="text-sm font-medium text-foreground">Password</label>
                         <div className="relative">
                           <Input
                             type={showStudentPassword ? "text" : "password"}
@@ -428,17 +443,18 @@ const LoginForm: React.FC<LoginFormProps> = ({ selectedRole, onBack }) => {
                             value={studentCredentials.password}
                             onChange={(e) => setStudentCredentials({...studentCredentials, password: e.target.value})}
                             required
+                            className="bg-card border-accent text-foreground"
                           />
                           <button
                             type="button"
                             onClick={() => setShowStudentPassword(!showStudentPassword)}
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
                           >
                             {showStudentPassword ? <EyeClosed size={20} /> : <Eye size={20} />}
                           </button>
                         </div>
                       </div>
-                      <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
+                      <Button type="submit" className="w-full bg-amber-700 hover:bg-amber-800 text-white">
                         Login as Student
                       </Button>
                     </form>
@@ -447,17 +463,18 @@ const LoginForm: React.FC<LoginFormProps> = ({ selectedRole, onBack }) => {
                   <TabsContent value="admin">
                     <form onSubmit={handleAdminLogin} className="space-y-4">
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Email</label>
+                        <label className="text-sm font-medium text-foreground">Email</label>
                         <Input
                           type="email"
                           placeholder="Enter your email"
                           value={adminCredentials.email}
                           onChange={(e) => setAdminCredentials({...adminCredentials, email: e.target.value})}
                           required
+                          className="bg-card border-accent text-foreground"
                         />
                       </div>
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Password</label>
+                        <label className="text-sm font-medium text-foreground">Password</label>
                         <div className="relative">
                           <Input
                             type={showAdminPassword ? "text" : "password"}
@@ -465,17 +482,18 @@ const LoginForm: React.FC<LoginFormProps> = ({ selectedRole, onBack }) => {
                             value={adminCredentials.password}
                             onChange={(e) => setAdminCredentials({...adminCredentials, password: e.target.value})}
                             required
+                            className="bg-card border-accent text-foreground"
                           />
                           <button
                             type="button"
                             onClick={() => setShowAdminPassword(!showAdminPassword)}
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
                           >
                             {showAdminPassword ? <EyeClosed size={20} /> : <Eye size={20} />}
                           </button>
                         </div>
                       </div>
-                      <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700">
+                      <Button type="submit" className="w-full bg-amber-800 hover:bg-amber-900 text-white">
                         Login as Teacher
                       </Button>
                     </form>
@@ -486,27 +504,29 @@ const LoginForm: React.FC<LoginFormProps> = ({ selectedRole, onBack }) => {
                   <TabsContent value="student">
                     <form onSubmit={handleStudentSignup} className="space-y-4">
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Full Name</label>
+                        <label className="text-sm font-medium text-foreground">Full Name</label>
                         <Input
                           type="text"
                           placeholder="Enter your full name"
                           value={studentSignupData.name}
                           onChange={(e) => setStudentSignupData({...studentSignupData, name: e.target.value})}
                           required
+                          className="bg-card border-accent text-foreground"
                         />
                       </div>
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Email</label>
+                        <label className="text-sm font-medium text-foreground">Email</label>
                         <Input
                           type="email"
                           placeholder="Enter your email"
                           value={studentSignupData.email}
                           onChange={(e) => setStudentSignupData({...studentSignupData, email: e.target.value})}
                           required
+                          className="bg-card border-accent text-foreground"
                         />
                       </div>
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Password</label>
+                        <label className="text-sm font-medium text-foreground">Password</label>
                         <div className="relative">
                           <Input
                             type={showStudentSignupPassword ? "text" : "password"}
@@ -514,18 +534,19 @@ const LoginForm: React.FC<LoginFormProps> = ({ selectedRole, onBack }) => {
                             value={studentSignupData.password}
                             onChange={(e) => setStudentSignupData({...studentSignupData, password: e.target.value})}
                             required
+                            className="bg-card border-accent text-foreground"
                           />
                           <button
                             type="button"
                             onClick={() => setShowStudentSignupPassword(!showStudentSignupPassword)}
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
                           >
                             {showStudentSignupPassword ? <EyeClosed size={20} /> : <Eye size={20} />}
                           </button>
                         </div>
                       </div>
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Confirm Password</label>
+                        <label className="text-sm font-medium text-foreground">Confirm Password</label>
                         <div className="relative">
                           <Input
                             type={showStudentSignupConfirmPassword ? "text" : "password"}
@@ -533,17 +554,18 @@ const LoginForm: React.FC<LoginFormProps> = ({ selectedRole, onBack }) => {
                             value={studentSignupData.confirmPassword}
                             onChange={(e) => setStudentSignupData({...studentSignupData, confirmPassword: e.target.value})}
                             required
+                            className="bg-card border-accent text-foreground"
                           />
                           <button
                             type="button"
                             onClick={() => setShowStudentSignupConfirmPassword(!showStudentSignupConfirmPassword)}
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
                           >
                             {showStudentSignupConfirmPassword ? <EyeClosed size={20} /> : <Eye size={20} />}
                           </button>
                         </div>
                       </div>
-                      <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
+                      <Button type="submit" className="w-full bg-amber-700 hover:bg-amber-800 text-white">
                         Sign Up as Student
                       </Button>
                     </form>
@@ -552,40 +574,43 @@ const LoginForm: React.FC<LoginFormProps> = ({ selectedRole, onBack }) => {
                   <TabsContent value="admin">
                     <form onSubmit={handleAdminSignup} className="space-y-4">
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Full Name</label>
+                        <label className="text-sm font-medium text-foreground">Full Name</label>
                         <Input
                           type="text"
                           placeholder="Enter your full name"
                           value={adminSignupData.name}
                           onChange={(e) => setAdminSignupData({...adminSignupData, name: e.target.value})}
                           required
+                          className="bg-card border-accent text-foreground"
                         />
                       </div>
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Email</label>
+                        <label className="text-sm font-medium text-foreground">Email</label>
                         <Input
                           type="email"
                           placeholder="Enter your email"
                           value={adminSignupData.email}
                           onChange={(e) => setAdminSignupData({...adminSignupData, email: e.target.value})}
                           required
+                          className="bg-card border-accent text-foreground"
                         />
                       </div>
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Special Teacher Code</label>
+                        <label className="text-sm font-medium text-foreground">Special Teacher Code</label>
                         <Input
                           type="text"
                           placeholder="Enter the special teacher code"
                           value={adminSignupData.specialCode}
                           onChange={(e) => setAdminSignupData({...adminSignupData, specialCode: e.target.value})}
                           required
+                          className="bg-card border-accent text-foreground"
                         />
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-muted-foreground mt-1">
                           Contact an administrator to get the special code required for teacher registration.
                         </p>
                       </div>
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Password</label>
+                        <label className="text-sm font-medium text-foreground">Password</label>
                         <div className="relative">
                           <Input
                             type={showAdminSignupPassword ? "text" : "password"}
@@ -593,18 +618,19 @@ const LoginForm: React.FC<LoginFormProps> = ({ selectedRole, onBack }) => {
                             value={adminSignupData.password}
                             onChange={(e) => setAdminSignupData({...adminSignupData, password: e.target.value})}
                             required
+                            className="bg-card border-accent text-foreground"
                           />
                           <button
                             type="button"
                             onClick={() => setShowAdminSignupPassword(!showAdminSignupPassword)}
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
                           >
                             {showAdminSignupPassword ? <EyeClosed size={20} /> : <Eye size={20} />}
                           </button>
                         </div>
                       </div>
                       <div>
-                        <label className="text-sm font-medium text-gray-700">Confirm Password</label>
+                        <label className="text-sm font-medium text-foreground">Confirm Password</label>
                         <div className="relative">
                           <Input
                             type={showAdminSignupConfirmPassword ? "text" : "password"}
@@ -612,17 +638,18 @@ const LoginForm: React.FC<LoginFormProps> = ({ selectedRole, onBack }) => {
                             value={adminSignupData.confirmPassword}
                             onChange={(e) => setAdminSignupData({...adminSignupData, confirmPassword: e.target.value})}
                             required
+                            className="bg-card border-accent text-foreground"
                           />
                           <button
                             type="button"
                             onClick={() => setShowAdminSignupConfirmPassword(!showAdminSignupConfirmPassword)}
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
                           >
                             {showAdminSignupConfirmPassword ? <EyeClosed size={20} /> : <Eye size={20} />}
                           </button>
                         </div>
                       </div>
-                      <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700">
+                      <Button type="submit" className="w-full bg-amber-800 hover:bg-amber-900 text-white">
                         Sign Up as Teacher
                       </Button>
                     </form>
