@@ -1,11 +1,11 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FileText, BarChart, Clock, LogOut, User, Trophy, Target, TrendingUp, Star, Calendar, Award } from 'lucide-react';
+import { FileText, BarChart, Clock, LogOut, User, Trophy, Target, TrendingUp, Star, Calendar, Award, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import FullScreenTestInterface from './FullScreenTestInterface';
+import StudentTestDetail from './StudentTestDetail';
 
 interface StudentDashboardProps {
   onLogout: () => void;
@@ -28,6 +28,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState('tests');
   const [selectedTest, setSelectedTest] = useState<any>(null);
+  const [selectedTestDetail, setSelectedTestDetail] = useState<{ test: any; result: any } | null>(null);
   const navigate = useNavigate();
 
   const averageScore = studentResults.length > 0 
@@ -36,6 +37,13 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
 
   const completedTests = studentResults.length;
   const availableTests = tests.length;
+
+  const handleViewTestDetail = (result: any) => {
+    const test = tests.find(t => t.id === result.test_id);
+    if (test) {
+      setSelectedTestDetail({ test, result });
+    }
+  };
 
   if (selectedTest) {
     return (
@@ -47,6 +55,16 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
         }}
         onBack={() => setSelectedTest(null)}
         studentName={studentName}
+      />
+    );
+  }
+
+  if (selectedTestDetail) {
+    return (
+      <StudentTestDetail
+        test={selectedTestDetail.test}
+        result={selectedTestDetail.result}
+        onBack={() => setSelectedTestDetail(null)}
       />
     );
   }
@@ -263,15 +281,19 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
                     const scoreIcon = result.score >= 80 ? '🏆' : result.score >= 60 ? '👍' : '📚';
                     
                     return (
-                      <Card key={result.id} className="bg-white/90 backdrop-blur-sm hover-lift border-0 modern-shadow transition-all duration-300">
+                      <Card 
+                        key={result.id} 
+                        className="bg-white/90 backdrop-blur-sm hover-lift border-0 modern-shadow transition-all duration-300 cursor-pointer group"
+                        onClick={() => handleViewTestDetail(result)}
+                      >
                         <CardContent className="p-6">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4">
-                              <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl">
+                              <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl group-hover:scale-110 transition-transform duration-300">
                                 <FileText size={20} className="text-white" />
                               </div>
                               <div>
-                                <h3 className="text-xl font-bold text-gray-800 mb-1">{test.title}</h3>
+                                <h3 className="text-xl font-bold text-gray-800 mb-1 group-hover:text-purple-700 transition-colors">{test.title}</h3>
                                 <div className="flex items-center gap-3">
                                   <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-bold text-white bg-gradient-to-r ${scoreColor} modern-shadow`}>
                                     <span>{scoreIcon}</span>
@@ -284,13 +306,27 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
                                 </div>
                               </div>
                             </div>
-                            <div className="text-right">
-                              <div className="text-sm text-gray-600 font-medium">
-                                {result.correct_answers} / {result.total_questions}
+                            <div className="flex items-center gap-4">
+                              <div className="text-right">
+                                <div className="text-sm text-gray-600 font-medium">
+                                  {result.correct_answers} / {result.total_questions}
+                                </div>
+                                <div className="text-xs text-gray-500">
+                                  correct answers
+                                </div>
                               </div>
-                              <div className="text-xs text-gray-500">
-                                correct answers
-                              </div>
+                              <Button 
+                                variant="outline"
+                                size="sm"
+                                className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0 hover:from-purple-600 hover:to-pink-600 modern-shadow"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleViewTestDetail(result);
+                                }}
+                              >
+                                <Eye size={14} />
+                                View Details
+                              </Button>
                             </div>
                           </div>
                         </CardContent>
