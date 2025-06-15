@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -69,20 +70,25 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
-      <header className="bg-white/80 backdrop-blur-lg shadow-lg border-b border-white/20 sticky top-0 z-50">
+    <div className="min-h-screen classic-gradient">
+      <header className="bg-card/95 backdrop-blur-md shadow-lg border-b border-accent sticky top-0 z-50">
         <div className="px-6 py-6 flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent welcome-text">
-              Welcome, {profile?.name || 'Teacher'}
-            </h1>
-            <p className="text-gray-600 mt-1 proper-line-height">Manage your classroom with ease</p>
+          <div className="flex items-center gap-4">
+            <div className="p-3 classic-accent-gradient rounded-xl modern-shadow">
+              <GraduationCap size={24} className="text-amber-900" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-foreground welcome-text">
+                Welcome, {profile?.name || 'Teacher'}! 👨‍🏫
+              </h1>
+              <p className="text-muted-foreground mt-1 proper-line-height">Manage your classroom with ease</p>
+            </div>
           </div>
           <div className="flex items-center gap-3">
             <Button 
               onClick={() => navigate('/profile')} 
               variant="outline" 
-              className="flex items-center gap-2 bg-white/70 border-purple-200 text-purple-700 hover:bg-purple-50 hover:border-purple-300 transition-all duration-300 proper-line-height"
+              className="flex items-center gap-2 hover-lift border-accent text-foreground hover:border-primary hover:bg-accent bg-card/80 backdrop-blur-sm transition-all duration-300 proper-line-height"
             >
               <User size={16} />
               Profile
@@ -90,7 +96,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
             <Button 
               onClick={onLogout} 
               variant="outline" 
-              className="flex items-center gap-2 bg-white/70 border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 proper-line-height"
+              className="flex items-center gap-2 hover-lift border-accent text-muted-foreground hover:border-destructive hover:bg-destructive/10 bg-card/80 backdrop-blur-sm transition-all duration-300 proper-line-height"
             >
               <LogOut size={16} />
               Logout
@@ -101,70 +107,70 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
       <div className="p-6">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-5 bg-white/80 backdrop-blur-sm border-0 modern-shadow p-1">
-            <TabsTrigger value="overview" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white transition-all duration-300 proper-line-height">Overview</TabsTrigger>
-            <TabsTrigger value="tests" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white transition-all duration-300 proper-line-height">Tests</TabsTrigger>
-            <TabsTrigger value="results" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white transition-all duration-300 proper-line-height">Results</TabsTrigger>
-            <TabsTrigger value="students" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white transition-all duration-300 proper-line-height">Students</TabsTrigger>
-            <TabsTrigger value="resources" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white transition-all duration-300 proper-line-height">Resources</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-5 bg-card/90 backdrop-blur-sm modern-shadow rounded-xl p-1 border border-accent">
+            <TabsTrigger value="overview" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg transition-all duration-300 font-semibold proper-line-height">Overview</TabsTrigger>
+            <TabsTrigger value="tests" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg transition-all duration-300 font-semibold proper-line-height">Tests</TabsTrigger>
+            <TabsTrigger value="results" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg transition-all duration-300 font-semibold proper-line-height">Results</TabsTrigger>
+            <TabsTrigger value="students" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg transition-all duration-300 font-semibold proper-line-height">Students</TabsTrigger>
+            <TabsTrigger value="resources" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-lg transition-all duration-300 font-semibold proper-line-height">Resources</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-8 mt-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card className="bg-white/80 backdrop-blur-sm border-0 modern-shadow hover-lift">
+              <Card className="bg-card/90 backdrop-blur-sm hover-lift border border-accent modern-shadow transition-all duration-300">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-semibold text-gray-700 proper-line-height">Total Tests</CardTitle>
-                  <div className="p-2 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg">
-                    <FileText className="h-4 w-4 text-white" />
+                  <CardTitle className="text-sm font-semibold text-foreground proper-line-height">Total Tests</CardTitle>
+                  <div className="p-2 classic-accent-gradient rounded-lg modern-shadow">
+                    <FileText className="h-4 w-4 text-amber-900" />
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent header-text">{tests.length}</div>
-                  <p className="text-xs text-gray-600 mt-1 proper-line-height">Active tests</p>
+                  <div className="text-3xl font-bold text-primary header-text">{tests.length}</div>
+                  <p className="text-xs text-muted-foreground mt-1 font-medium proper-line-height">Active tests</p>
                 </CardContent>
               </Card>
 
-              <Card className="bg-white/80 backdrop-blur-sm border-0 modern-shadow hover-lift">
+              <Card className="bg-card/90 backdrop-blur-sm hover-lift border border-accent modern-shadow transition-all duration-300">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-semibold text-gray-700 proper-line-height">Students</CardTitle>
-                  <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg">
-                    <Users className="h-4 w-4 text-white" />
+                  <CardTitle className="text-sm font-semibold text-foreground proper-line-height">Students</CardTitle>
+                  <div className="p-2 classic-accent-gradient rounded-lg modern-shadow">
+                    <Users className="h-4 w-4 text-amber-900" />
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent header-text">{totalStudents}</div>
-                  <p className="text-xs text-gray-600 mt-1 proper-line-height">Registered students</p>
+                  <div className="text-3xl font-bold text-primary header-text">{totalStudents}</div>
+                  <p className="text-xs text-muted-foreground mt-1 font-medium proper-line-height">Registered students</p>
                 </CardContent>
               </Card>
 
-              <Card className="bg-white/80 backdrop-blur-sm border-0 modern-shadow hover-lift">
+              <Card className="bg-card/90 backdrop-blur-sm hover-lift border border-accent modern-shadow transition-all duration-300">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-semibold text-gray-700 proper-line-height">Average Score</CardTitle>
-                  <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg">
-                    <BarChart className="h-4 w-4 text-white" />
+                  <CardTitle className="text-sm font-semibold text-foreground proper-line-height">Average Score</CardTitle>
+                  <div className="p-2 classic-accent-gradient rounded-lg modern-shadow">
+                    <BarChart className="h-4 w-4 text-amber-900" />
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent header-text">{averageScore.toFixed(1)}%</div>
-                  <p className="text-xs text-gray-600 mt-1 proper-line-height">Overall performance</p>
+                  <div className="text-3xl font-bold text-primary header-text">{averageScore.toFixed(1)}%</div>
+                  <p className="text-xs text-muted-foreground mt-1 font-medium proper-line-height">Overall performance</p>
                 </CardContent>
               </Card>
             </div>
 
-            <Card className="bg-white/80 backdrop-blur-sm border-0 modern-shadow hover-lift">
+            <Card className="bg-card/90 backdrop-blur-sm hover-lift border border-accent modern-shadow">
               <CardHeader>
-                <CardTitle className="text-xl bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent flex items-center gap-3">
-                  <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg">
-                    <GraduationCap size={20} className="text-white" />
+                <CardTitle className="text-xl text-foreground flex items-center gap-3">
+                  <div className="p-2 classic-accent-gradient rounded-lg modern-shadow">
+                    <GraduationCap size={20} className="text-amber-900" />
                   </div>
                   <span className="header-text">Quick Actions</span>
                 </CardTitle>
-                <CardDescription className="text-gray-600 proper-line-height">Manage your classroom efficiently</CardDescription>
+                <CardDescription className="text-muted-foreground proper-line-height">Manage your classroom efficiently</CardDescription>
               </CardHeader>
               <CardContent className="flex flex-wrap gap-4">
                 <Button 
                   onClick={() => setShowTestCreator(true)} 
-                  className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 modern-shadow hover-lift proper-line-height"
+                  className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground modern-shadow hover-lift proper-line-height"
                 >
                   <Plus size={16} />
                   Create New Test
@@ -172,7 +178,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 <Button 
                   variant="outline" 
                   onClick={() => setActiveTab('results')} 
-                  className="flex items-center gap-2 bg-white/70 border-purple-200 text-purple-700 hover:bg-purple-50 hover:border-purple-300 transition-all duration-300 proper-line-height"
+                  className="flex items-center gap-2 bg-card/80 backdrop-blur-sm border-accent text-foreground hover:bg-accent hover:border-primary transition-all duration-300 proper-line-height"
                 >
                   <BarChart size={16} />
                   View Results
@@ -180,7 +186,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 <Button 
                   variant="outline" 
                   onClick={() => setActiveTab('resources')} 
-                  className="flex items-center gap-2 bg-white/70 border-blue-200 text-blue-700 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300 proper-line-height"
+                  className="flex items-center gap-2 bg-card/80 backdrop-blur-sm border-accent text-foreground hover:bg-accent hover:border-primary transition-all duration-300 proper-line-height"
                 >
                   <BookOpen size={16} />
                   Manage Resources
@@ -192,10 +198,15 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
           <TabsContent value="tests" className="mt-8">
             <div className="space-y-6">
               <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent header-text">My Tests</h2>
+                <div className="flex items-center gap-4">
+                  <div className="p-3 classic-accent-gradient rounded-xl modern-shadow">
+                    <FileText size={24} className="text-amber-900" />
+                  </div>
+                  <h2 className="text-3xl font-bold text-foreground header-text">My Tests</h2>
+                </div>
                 <Button 
                   onClick={() => setShowTestCreator(true)} 
-                  className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 modern-shadow hover-lift proper-line-height"
+                  className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground modern-shadow hover-lift proper-line-height"
                 >
                   <Plus size={16} />
                   Create New Test
@@ -204,35 +215,35 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
               <div className="grid gap-6">
                 {tests.map((test) => (
-                  <Card key={test.id} className="bg-white/80 backdrop-blur-sm border-0 modern-shadow hover-lift">
+                  <Card key={test.id} className="bg-card/95 backdrop-blur-sm hover-lift border border-accent modern-shadow transition-all duration-300">
                     <CardHeader>
                       <CardTitle className="flex items-center gap-3">
-                        <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg">
-                          <FileText size={16} className="text-white" />
+                        <div className="p-2 classic-accent-gradient rounded-lg modern-shadow">
+                          <FileText size={16} className="text-amber-900" />
                         </div>
-                        <span className="header-text">{test.title}</span>
+                        <span className="header-text text-foreground">{test.title}</span>
                       </CardTitle>
-                      <CardDescription className="flex items-center gap-4 text-gray-600">
+                      <CardDescription className="flex items-center gap-4 text-muted-foreground">
                         <span className="flex items-center gap-1 proper-line-height">
-                          <Award size={14} />
+                          <Award size={14} className="text-amber-700" />
                           {test.questions.length} questions
                         </span>
                         <span className="flex items-center gap-1 proper-line-height">
-                          <TrendingUp size={14} />
+                          <TrendingUp size={14} className="text-amber-800" />
                           Created {new Date(test.created_at).toLocaleDateString()}
                         </span>
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600 flex items-center gap-2">
-                          Status: <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium proper-line-height">Published</span>
+                        <span className="text-sm text-muted-foreground flex items-center gap-2">
+                          Status: <span className="px-3 py-1 classic-accent-gradient text-amber-900 rounded-full text-xs font-semibold modern-shadow proper-line-height">Published</span>
                         </span>
                         <div className="flex gap-2">
                           <Button 
                             variant="outline" 
                             size="sm" 
-                            className="border-purple-200 text-purple-600 hover:bg-purple-50 proper-line-height"
+                            className="border-accent text-foreground hover:bg-accent hover:border-primary proper-line-height"
                             onClick={() => handleEditTest(test)}
                           >
                             Edit
@@ -240,7 +251,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                           <Button 
                             variant="outline" 
                             size="sm" 
-                            className="border-blue-200 text-blue-600 hover:bg-blue-50 proper-line-height"
+                            className="border-accent text-foreground hover:bg-accent hover:border-primary proper-line-height"
                             onClick={() => handleViewTestResults(test.id)}
                           >
                             View Results
