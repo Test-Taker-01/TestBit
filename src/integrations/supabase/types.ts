@@ -63,6 +63,48 @@ export type Database = {
         }
         Relationships: []
       }
+      resources: {
+        Row: {
+          content: string | null
+          course: string | null
+          created_at: string
+          created_by: string
+          description: string | null
+          drive_link: string | null
+          id: string
+          subject: string | null
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          content?: string | null
+          course?: string | null
+          created_at?: string
+          created_by: string
+          description?: string | null
+          drive_link?: string | null
+          id?: string
+          subject?: string | null
+          title: string
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string | null
+          course?: string | null
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          drive_link?: string | null
+          id?: string
+          subject?: string | null
+          title?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       teacher_settings: {
         Row: {
           id: string
