@@ -3,12 +3,13 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, FileText, BarChart, Users, BookOpen, LogOut, User } from 'lucide-react';
+import { Plus, FileText, BarChart, Users, BookOpen, LogOut, User, GraduationCap, Award, TrendingUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import TestCreator from './TestCreator';
 import TestResults from './TestResults';
 import ResourceManager from './ResourceManager';
 import StudentsList from './StudentsList';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface AdminDashboardProps {
   onLogout: () => void;
@@ -34,6 +35,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [activeTab, setActiveTab] = useState('overview');
   const [showTestCreator, setShowTestCreator] = useState(false);
   const navigate = useNavigate();
+  const { profile } = useAuth();
 
   const totalStudents = new Set(testResults.map(result => result.student_id)).size;
   const averageScore = testResults.length > 0 
@@ -41,20 +43,29 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
     : 0;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+      <header className="bg-white/80 backdrop-blur-lg shadow-lg border-b border-white/20 sticky top-0 z-50">
         <div className="px-6 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">Teacher Dashboard</h1>
-          <div className="flex items-center gap-2">
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+              Welcome, {profile?.name || 'Teacher'}
+            </h1>
+            <p className="text-gray-600 mt-1">Manage your classroom with ease</p>
+          </div>
+          <div className="flex items-center gap-3">
             <Button 
               onClick={() => navigate('/profile')} 
               variant="outline" 
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 bg-white/70 border-purple-200 text-purple-700 hover:bg-purple-50 hover:border-purple-300 transition-all duration-300"
             >
               <User size={16} />
               Profile
             </Button>
-            <Button onClick={onLogout} variant="outline" className="flex items-center gap-2">
+            <Button 
+              onClick={onLogout} 
+              variant="outline" 
+              className="flex items-center gap-2 bg-white/70 border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-300"
+            >
               <LogOut size={16} />
               Logout
             </Button>
@@ -64,65 +75,87 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
       <div className="p-6">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="tests">Tests</TabsTrigger>
-            <TabsTrigger value="results">Results</TabsTrigger>
-            <TabsTrigger value="students">Students</TabsTrigger>
-            <TabsTrigger value="resources">Resources</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-5 bg-white/80 backdrop-blur-sm border-0 modern-shadow p-1">
+            <TabsTrigger value="overview" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white transition-all duration-300">Overview</TabsTrigger>
+            <TabsTrigger value="tests" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white transition-all duration-300">Tests</TabsTrigger>
+            <TabsTrigger value="results" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white transition-all duration-300">Results</TabsTrigger>
+            <TabsTrigger value="students" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white transition-all duration-300">Students</TabsTrigger>
+            <TabsTrigger value="resources" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white transition-all duration-300">Resources</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="overview" className="space-y-6">
+          <TabsContent value="overview" className="space-y-8 mt-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card>
+              <Card className="bg-white/80 backdrop-blur-sm border-0 modern-shadow hover-lift">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Tests</CardTitle>
-                  <FileText className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-sm font-semibold text-gray-700">Total Tests</CardTitle>
+                  <div className="p-2 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg">
+                    <FileText className="h-4 w-4 text-white" />
+                  </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{tests.length}</div>
-                  <p className="text-xs text-muted-foreground">Active tests</p>
+                  <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">{tests.length}</div>
+                  <p className="text-xs text-gray-600 mt-1">Active tests</p>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="bg-white/80 backdrop-blur-sm border-0 modern-shadow hover-lift">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Students</CardTitle>
-                  <Users className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-sm font-semibold text-gray-700">Students</CardTitle>
+                  <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg">
+                    <Users className="h-4 w-4 text-white" />
+                  </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{totalStudents}</div>
-                  <p className="text-xs text-muted-foreground">Registered students</p>
+                  <div className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">{totalStudents}</div>
+                  <p className="text-xs text-gray-600 mt-1">Registered students</p>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="bg-white/80 backdrop-blur-sm border-0 modern-shadow hover-lift">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Average Score</CardTitle>
-                  <BarChart className="h-4 w-4 text-muted-foreground" />
+                  <CardTitle className="text-sm font-semibold text-gray-700">Average Score</CardTitle>
+                  <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg">
+                    <BarChart className="h-4 w-4 text-white" />
+                  </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{averageScore.toFixed(1)}%</div>
-                  <p className="text-xs text-muted-foreground">Overall performance</p>
+                  <div className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">{averageScore.toFixed(1)}%</div>
+                  <p className="text-xs text-gray-600 mt-1">Overall performance</p>
                 </CardContent>
               </Card>
             </div>
 
-            <Card>
+            <Card className="bg-white/80 backdrop-blur-sm border-0 modern-shadow hover-lift">
               <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
-                <CardDescription>Manage your classroom efficiently</CardDescription>
+                <CardTitle className="text-xl bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent flex items-center gap-3">
+                  <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg">
+                    <GraduationCap size={20} className="text-white" />
+                  </div>
+                  Quick Actions
+                </CardTitle>
+                <CardDescription className="text-gray-600">Manage your classroom efficiently</CardDescription>
               </CardHeader>
-              <CardContent className="flex gap-4">
-                <Button onClick={() => setShowTestCreator(true)} className="flex items-center gap-2">
+              <CardContent className="flex flex-wrap gap-4">
+                <Button 
+                  onClick={() => setShowTestCreator(true)} 
+                  className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 modern-shadow hover-lift"
+                >
                   <Plus size={16} />
                   Create New Test
                 </Button>
-                <Button variant="outline" onClick={() => setActiveTab('results')} className="flex items-center gap-2">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setActiveTab('results')} 
+                  className="flex items-center gap-2 bg-white/70 border-purple-200 text-purple-700 hover:bg-purple-50 hover:border-purple-300 transition-all duration-300"
+                >
                   <BarChart size={16} />
                   View Results
                 </Button>
-                <Button variant="outline" onClick={() => setActiveTab('resources')} className="flex items-center gap-2">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setActiveTab('resources')} 
+                  className="flex items-center gap-2 bg-white/70 border-blue-200 text-blue-700 hover:bg-blue-50 hover:border-blue-300 transition-all duration-300"
+                >
                   <BookOpen size={16} />
                   Manage Resources
                 </Button>
@@ -130,33 +163,48 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
             </Card>
           </TabsContent>
 
-          <TabsContent value="tests">
+          <TabsContent value="tests" className="mt-8">
             <div className="space-y-6">
               <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold">My Tests</h2>
-                <Button onClick={() => setShowTestCreator(true)} className="flex items-center gap-2">
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">My Tests</h2>
+                <Button 
+                  onClick={() => setShowTestCreator(true)} 
+                  className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 modern-shadow hover-lift"
+                >
                   <Plus size={16} />
                   Create New Test
                 </Button>
               </div>
 
-              <div className="grid gap-4">
+              <div className="grid gap-6">
                 {tests.map((test) => (
-                  <Card key={test.id}>
+                  <Card key={test.id} className="bg-white/80 backdrop-blur-sm border-0 modern-shadow hover-lift">
                     <CardHeader>
-                      <CardTitle>{test.title}</CardTitle>
-                      <CardDescription>
-                        {test.questions.length} questions • Created {new Date(test.created_at).toLocaleDateString()}
+                      <CardTitle className="flex items-center gap-3">
+                        <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg">
+                          <FileText size={16} className="text-white" />
+                        </div>
+                        {test.title}
+                      </CardTitle>
+                      <CardDescription className="flex items-center gap-4 text-gray-600">
+                        <span className="flex items-center gap-1">
+                          <Award size={14} />
+                          {test.questions.length} questions
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <TrendingUp size={14} />
+                          Created {new Date(test.created_at).toLocaleDateString()}
+                        </span>
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600">
-                          Status: <span className="font-medium text-green-600">Published</span>
+                        <span className="text-sm text-gray-600 flex items-center gap-2">
+                          Status: <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">Published</span>
                         </span>
-                        <div className="space-x-2">
-                          <Button variant="outline" size="sm">Edit</Button>
-                          <Button variant="outline" size="sm">View Results</Button>
+                        <div className="flex gap-2">
+                          <Button variant="outline" size="sm" className="border-purple-200 text-purple-600 hover:bg-purple-50">Edit</Button>
+                          <Button variant="outline" size="sm" className="border-blue-200 text-blue-600 hover:bg-blue-50">View Results</Button>
                         </div>
                       </div>
                     </CardContent>
@@ -166,7 +214,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
             </div>
           </TabsContent>
 
-          <TabsContent value="results">
+          <TabsContent value="results" className="mt-8">
             <TestResults 
               testResults={testResults} 
               tests={tests} 
@@ -175,11 +223,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
             />
           </TabsContent>
 
-          <TabsContent value="students">
+          <TabsContent value="students" className="mt-8">
             <StudentsList profiles={profiles} />
           </TabsContent>
 
-          <TabsContent value="resources">
+          <TabsContent value="resources" className="mt-8">
             <ResourceManager resources={resources} onAddResource={onAddResource} />
           </TabsContent>
         </Tabs>

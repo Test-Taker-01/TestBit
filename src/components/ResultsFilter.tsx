@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { X, Filter, ChevronDown, ChevronUp } from 'lucide-react';
+import { X, Filter, ChevronDown, ChevronUp, Search } from 'lucide-react';
 
 interface ResultsFilterProps {
   onFilterChange: (filters: FilterState) => void;
@@ -14,6 +14,8 @@ interface ResultsFilterProps {
 
 export interface FilterState {
   testId: string;
+  testName: string;
+  subject: string;
   minScore: string;
   maxScore: string;
   dateFrom: string;
@@ -27,6 +29,8 @@ const ResultsFilter: React.FC<ResultsFilterProps> = ({
 }) => {
   const [filters, setFilters] = React.useState<FilterState>({
     testId: '',
+    testName: '',
+    subject: '',
     minScore: '',
     maxScore: '',
     dateFrom: '',
@@ -34,6 +38,8 @@ const ResultsFilter: React.FC<ResultsFilterProps> = ({
   });
 
   const [isExpanded, setIsExpanded] = React.useState(false);
+
+  const uniqueSubjects = [...new Set(tests.map(test => test.subject).filter(Boolean))];
 
   const handleFilterChange = (key: keyof FilterState, value: string) => {
     const newFilters = { ...filters, [key]: value };
@@ -44,6 +50,8 @@ const ResultsFilter: React.FC<ResultsFilterProps> = ({
   const clearFilters = () => {
     const emptyFilters: FilterState = {
       testId: '',
+      testName: '',
+      subject: '',
       minScore: '',
       maxScore: '',
       dateFrom: '',
@@ -121,6 +129,42 @@ const ResultsFilter: React.FC<ResultsFilterProps> = ({
 
             <div className="space-y-3">
               <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                <Search size={14} />
+                Test Name
+              </label>
+              <Input
+                type="text"
+                placeholder="Search by test name..."
+                value={filters.testName}
+                onChange={(e) => handleFilterChange('testName', e.target.value)}
+                className="border-purple-200 focus:border-purple-400 focus:ring-purple-200 bg-white/90"
+              />
+            </div>
+
+            <div className="space-y-3">
+              <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                📚 Subject
+              </label>
+              <Select 
+                value={filters.subject} 
+                onValueChange={(value) => handleFilterChange('subject', value)}
+              >
+                <SelectTrigger className="border-orange-200 focus:border-orange-400 focus:ring-orange-200 bg-white/90">
+                  <SelectValue placeholder="All subjects" />
+                </SelectTrigger>
+                <SelectContent className="bg-white/95 backdrop-blur-sm border-orange-200">
+                  <SelectItem value="">All subjects</SelectItem>
+                  {uniqueSubjects.map((subject) => (
+                    <SelectItem key={subject} value={subject}>
+                      {subject}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-3">
+              <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
                 📊 Min Score (%)
               </label>
               <Input
@@ -181,6 +225,16 @@ const ResultsFilter: React.FC<ResultsFilterProps> = ({
                 {filters.testId && (
                   <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                     Test: {tests.find(t => t.id === filters.testId)?.title || 'Selected'}
+                  </span>
+                )}
+                {filters.testName && (
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                    Name: {filters.testName}
+                  </span>
+                )}
+                {filters.subject && (
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                    Subject: {filters.subject}
                   </span>
                 )}
                 {filters.minScore && (

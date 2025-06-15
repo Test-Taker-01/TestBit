@@ -1,10 +1,9 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Download, Eye, BarChart, Trash2 } from 'lucide-react';
+import { Download, Eye, BarChart, Trash2, Award, Users, TrendingUp } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import DetailedTestResult from './DetailedTestResult';
 import ResultsFilter, { FilterState } from './ResultsFilter';
@@ -28,9 +27,26 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests, profiles 
   const handleFilterChange = (filters: FilterState) => {
     let filtered = [...testResults];
 
-    // Filter by test
+    // Filter by test ID
     if (filters.testId) {
       filtered = filtered.filter(result => result.test_id === filters.testId);
+    }
+
+    // Filter by test name (search in test titles)
+    if (filters.testName) {
+      const searchTerm = filters.testName.toLowerCase();
+      filtered = filtered.filter(result => {
+        const test = tests.find(t => t.id === result.test_id);
+        return test?.title?.toLowerCase().includes(searchTerm);
+      });
+    }
+
+    // Filter by subject
+    if (filters.subject) {
+      filtered = filtered.filter(result => {
+        const test = tests.find(t => t.id === result.test_id);
+        return test?.subject === filters.subject;
+      });
     }
 
     // Filter by score range
@@ -58,7 +74,7 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests, profiles 
 
   const exportToExcel = () => {
     const csvContent = [
-      ['Student Name', 'Student ID', 'Test Title', 'Score', 'Total Questions', 'Correct Answers', 'Completion Date'].join(','),
+      ['Student Name', 'Student ID', 'Test Title', 'Subject', 'Score', 'Total Questions', 'Correct Answers', 'Completion Date'].join(','),
       ...filteredResults.map(result => {
         const test = tests.find(t => t.id === result.test_id);
         const profile = profiles.find(p => p.user_id === result.student_id);
@@ -66,6 +82,7 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests, profiles 
           profile?.name || 'Unknown Student',
           profile?.student_id || result.student_id,
           test?.title || 'Unknown Test',
+          test?.subject || 'N/A',
           `${result.score}%`,
           result.total_questions,
           result.correct_answers,
@@ -123,24 +140,29 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests, profiles 
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold">Test Results & Analytics</h2>
-        <Button onClick={exportToExcel} className="flex items-center gap-2">
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Test Results & Analytics</h2>
+        <Button 
+          onClick={exportToExcel} 
+          className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white border-0 modern-shadow hover-lift"
+        >
           <Download size={16} />
           Export to Excel
         </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
+        <Card className="bg-white/80 backdrop-blur-sm border-0 modern-shadow hover-lift">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Submissions</CardTitle>
-            <Eye className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-semibold text-gray-700">Total Submissions</CardTitle>
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg">
+              <Eye className="h-4 w-4 text-white" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{filteredResults.length}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">{filteredResults.length}</div>
+            <p className="text-xs text-gray-600 mt-1">
               {filteredResults.length !== testResults.length ? 
                 `${filteredResults.length} of ${testResults.length} shown` : 
                 'Test attempts'
@@ -149,27 +171,31 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests, profiles 
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-white/80 backdrop-blur-sm border-0 modern-shadow hover-lift">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Average Score</CardTitle>
-            <BarChart className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-semibold text-gray-700">Average Score</CardTitle>
+            <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg">
+              <Award className="h-4 w-4 text-white" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{averageScore.toFixed(1)}%</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">{averageScore.toFixed(1)}%</div>
+            <p className="text-xs text-gray-600 mt-1">
               {filteredResults.length !== testResults.length ? 'Filtered results' : 'Class performance'}
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-white/80 backdrop-blur-sm border-0 modern-shadow hover-lift">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pass Rate</CardTitle>
-            <BarChart className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-semibold text-gray-700">Pass Rate</CardTitle>
+            <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg">
+              <TrendingUp className="h-4 w-4 text-white" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{passRate.toFixed(1)}%</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">{passRate.toFixed(1)}%</div>
+            <p className="text-xs text-gray-600 mt-1">
               {filteredResults.length !== testResults.length ? 'Filtered results' : 'Students scoring ≥60%'}
             </p>
           </CardContent>
@@ -182,102 +208,139 @@ const TestResults: React.FC<TestResultsProps> = ({ testResults, tests, profiles 
         showTestFilter={true}
       />
 
-      <Card>
+      <Card className="bg-white/80 backdrop-blur-sm border-0 modern-shadow">
         <CardHeader>
-          <CardTitle>Detailed Results</CardTitle>
-          <CardDescription>Individual student performance across all tests</CardDescription>
+          <CardTitle className="text-xl bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg">
+              <Users size={18} className="text-white" />
+            </div>
+            Detailed Results
+          </CardTitle>
+          <CardDescription className="text-gray-600">Individual student performance across all tests</CardDescription>
         </CardHeader>
         <CardContent>
           {filteredResults.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-gray-500">
+            <div className="text-center py-12">
+              <div className="p-4 bg-gray-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                <BarChart size={24} className="text-gray-400" />
+              </div>
+              <p className="text-gray-500 text-lg font-medium">
                 {testResults.length === 0 ? 'No test submissions yet.' : 'No results match your filters.'}
+              </p>
+              <p className="text-gray-400 text-sm mt-2">
+                {testResults.length === 0 ? 'Students will appear here after completing tests.' : 'Try adjusting your filter criteria.'}
               </p>
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Student Name</TableHead>
-                  <TableHead>Test</TableHead>
-                  <TableHead>Score</TableHead>
-                  <TableHead>Questions</TableHead>
-                  <TableHead>Correct</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredResults.map((result, index) => {
-                  const test = tests.find(t => t.id === result.test_id);
-                  const studentName = getStudentName(result.student_id);
-                  return (
-                    <TableRow key={index}>
-                      <TableCell className="font-medium">{studentName}</TableCell>
-                      <TableCell>{test?.title || 'Unknown Test'}</TableCell>
-                      <TableCell>
-                        <Badge variant={getScoreBadgeVariant(result.score)}>
-                          {result.score}%
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{result.total_questions}</TableCell>
-                      <TableCell>{result.correct_answers}</TableCell>
-                      <TableCell>{new Date(result.completed_at).toLocaleDateString()}</TableCell>
-                      <TableCell>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => handleViewDetails(result)}
-                        >
-                          View Details
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-gray-50/50">
+                    <TableHead className="font-semibold">Student Name</TableHead>
+                    <TableHead className="font-semibold">Test</TableHead>
+                    <TableHead className="font-semibold">Subject</TableHead>
+                    <TableHead className="font-semibold">Score</TableHead>
+                    <TableHead className="font-semibold">Questions</TableHead>
+                    <TableHead className="font-semibold">Correct</TableHead>
+                    <TableHead className="font-semibold">Date</TableHead>
+                    <TableHead className="font-semibold">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredResults.map((result, index) => {
+                    const test = tests.find(t => t.id === result.test_id);
+                    const studentName = getStudentName(result.student_id);
+                    return (
+                      <TableRow key={index} className="hover:bg-purple-50/30 transition-colors">
+                        <TableCell className="font-medium">{studentName}</TableCell>
+                        <TableCell className="max-w-48 truncate" title={test?.title}>{test?.title || 'Unknown Test'}</TableCell>
+                        <TableCell>
+                          <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                            {test?.subject || 'N/A'}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={getScoreBadgeVariant(result.score)} className="font-medium">
+                            {result.score}%
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{result.total_questions}</TableCell>
+                        <TableCell>
+                          <span className="font-medium text-green-600">{result.correct_answers}</span>
+                        </TableCell>
+                        <TableCell className="text-gray-600">{new Date(result.completed_at).toLocaleDateString()}</TableCell>
+                        <TableCell>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleViewDetails(result)}
+                            className="border-purple-200 text-purple-600 hover:bg-purple-50 hover:border-purple-300 transition-all duration-300"
+                          >
+                            View Details
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
           )}
         </CardContent>
       </Card>
 
       {onDeleteTest && (
-        <Card>
+        <Card className="bg-white/80 backdrop-blur-sm border-0 modern-shadow">
           <CardHeader>
-            <CardTitle>Manage Tests</CardTitle>
-            <CardDescription>Delete tests and their associated results</CardDescription>
+            <CardTitle className="text-xl text-red-600 flex items-center gap-3">
+              <div className="p-2 bg-red-500 rounded-lg">
+                <Trash2 size={18} className="text-white" />
+              </div>
+              Manage Tests
+            </CardTitle>
+            <CardDescription className="text-gray-600">Delete tests and their associated results</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {tests.map((test) => {
-                const testResultsCount = testResults.filter(result => result.testId === test.id).length;
+                const testResultsCount = testResults.filter(result => result.test_id === test.id).length;
                 return (
-                  <div key={test.id} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div key={test.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg bg-gray-50/50">
                     <div>
-                      <h4 className="font-medium">{test.title}</h4>
-                      <p className="text-sm text-gray-600">
-                        {test.questions.length} questions • {testResultsCount} submissions
-                      </p>
+                      <h4 className="font-medium text-gray-900">{test.title}</h4>
+                      <div className="flex items-center gap-4 mt-1">
+                        <p className="text-sm text-gray-600">
+                          {test.questions.length} questions
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          {testResultsCount} submissions
+                        </p>
+                        {test.subject && (
+                          <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                            {test.subject}
+                          </span>
+                        )}
+                      </div>
                     </div>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <Button variant="destructive" size="sm" className="flex items-center gap-2">
+                        <Button variant="destructive" size="sm" className="flex items-center gap-2 bg-red-500 hover:bg-red-600">
                           <Trash2 size={16} />
                           Delete
                         </Button>
                       </AlertDialogTrigger>
-                      <AlertDialogContent>
+                      <AlertDialogContent className="bg-white">
                         <AlertDialogHeader>
-                          <AlertDialogTitle>Delete Test</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Are you sure you want to delete "{test.title}"? This will also delete all associated test results. This action cannot be undone.
+                          <AlertDialogTitle className="text-red-600">Delete Test</AlertDialogTitle>
+                          <AlertDialogDescription className="text-gray-600">
+                            Are you sure you want to delete "<span className="font-medium">{test.title}</span>"? This will also delete all associated test results. This action cannot be undone.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogCancel className="border-gray-300">Cancel</AlertDialogCancel>
                           <AlertDialogAction 
                             onClick={() => onDeleteTest(test.id)}
-                            className="bg-red-600 hover:bg-red-700"
+                            className="bg-red-600 hover:bg-red-700 text-white"
                           >
                             Delete Test
                           </AlertDialogAction>
