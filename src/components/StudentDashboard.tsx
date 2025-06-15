@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FileText, BarChart, Clock, LogOut, User, Trophy, Target, TrendingUp, Star, Calendar, Award, Eye } from 'lucide-react';
+import { FileText, BarChart, Clock, LogOut, User, Trophy, Target, TrendingUp, Star, Calendar, Award, Eye, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import FullScreenTestInterface from './FullScreenTestInterface';
 import DetailedTestResult from './DetailedTestResult';
@@ -286,58 +286,48 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
                   </div>
                 </div>
               ) : (
-                <div className="grid gap-6">
+                <div className="grid gap-4">
                   {completedResultsByTest.map((item) => {
                     const { test, result } = item;
                     const scoreColor = result.score >= 80 ? 'from-green-500 to-green-600' : 
                                      result.score >= 60 ? 'from-yellow-500 to-yellow-600' : 'from-red-500 to-red-600';
                     const scoreIcon = result.score >= 80 ? '🏆' : result.score >= 60 ? '👍' : '📚';
                     return (
-                      <Card key={test.id} className="bg-white/90 backdrop-blur-sm hover-lift border-0 modern-shadow transition-all duration-300">
-                        <CardHeader>
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <CardTitle className="flex items-center gap-3 text-gray-800">
-                                <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg">
-                                  <FileText size={18} className="text-white" />
-                                </div>
-                                <span className="text-xl font-bold">{test.title}</span>
-                              </CardTitle>
-                              <CardDescription className="flex items-center gap-3 flex-wrap ml-12">
-                                <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold text-white bg-gradient-to-r ${scoreColor} modern-shadow`}>
-                                  <span>{scoreIcon}</span>
-                                  {result.score}%
-                                </span>
-                                <span className="text-gray-600 font-medium flex items-center gap-2">
-                                  <Calendar size={14} className="text-purple-500" />
-                                  Completed on {new Date(result.completed_at).toLocaleDateString()}
-                                </span>
-                                {test.subject && (
-                                  <span className="text-gray-600 font-medium flex items-center gap-2">
-                                    <Target size={14} className="text-orange-500" />
-                                    {test.subject}
-                                  </span>
-                                )}
-                              </CardDescription>
-                            </div>
-                            <Button 
-                              onClick={() => handleViewTestResult(test, result)}
-                              className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white border-0 modern-shadow hover-lift"
-                              size="sm"
-                            >
-                              <Eye size={14} />
-                              View Details
-                            </Button>
-                          </div>
-                        </CardHeader>
-                        <CardContent>
+                      <Card 
+                        key={test.id} 
+                        className="bg-white/90 backdrop-blur-sm hover-lift border-0 modern-shadow transition-all duration-300 cursor-pointer hover:shadow-lg"
+                        onClick={() => handleViewTestResult(test, result)}
+                      >
+                        <CardContent className="p-6">
                           <div className="flex items-center justify-between">
-                            <div className="text-sm text-gray-600 font-medium flex items-center gap-2">
-                              <BarChart size={16} className="text-purple-500" />
-                              Correct Answers: <span className="font-bold text-gray-800">{result.correct_answers} / {result.total_questions}</span>
+                            <div className="flex items-center gap-4">
+                              <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl">
+                                <FileText size={20} className="text-white" />
+                              </div>
+                              <div>
+                                <h3 className="text-xl font-bold text-gray-800 mb-1">{test.title}</h3>
+                                <div className="flex items-center gap-3">
+                                  <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-bold text-white bg-gradient-to-r ${scoreColor} modern-shadow`}>
+                                    <span>{scoreIcon}</span>
+                                    {result.score}%
+                                  </span>
+                                  <span className="text-gray-600 text-sm font-medium flex items-center gap-1">
+                                    <Calendar size={14} className="text-purple-500" />
+                                    {new Date(result.completed_at).toLocaleDateString()}
+                                  </span>
+                                </div>
+                              </div>
                             </div>
-                            <div className="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-                              Accuracy: {Math.round((result.correct_answers / result.total_questions) * 100)}%
+                            <div className="flex items-center gap-4">
+                              <div className="text-right">
+                                <div className="text-sm text-gray-600 font-medium">
+                                  {result.correct_answers} / {result.total_questions}
+                                </div>
+                                <div className="text-xs text-gray-500">
+                                  correct answers
+                                </div>
+                              </div>
+                              <ChevronRight className="h-5 w-5 text-gray-400" />
                             </div>
                           </div>
                         </CardContent>
