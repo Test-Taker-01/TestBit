@@ -112,19 +112,19 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
               value="tests" 
               className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white rounded-lg transition-all duration-300 font-semibold proper-line-height"
             >
-              📝 Available Tests
+              Available Tests
             </TabsTrigger>
             <TabsTrigger 
               value="results"
               className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white rounded-lg transition-all duration-300 font-semibold proper-line-height"
             >
-              📊 My Results
+              My Results
             </TabsTrigger>
             <TabsTrigger 
               value="resources"
               className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white rounded-lg transition-all duration-300 font-semibold proper-line-height"
             >
-              📚 Resources
+              Resources
             </TabsTrigger>
           </TabsList>
 
