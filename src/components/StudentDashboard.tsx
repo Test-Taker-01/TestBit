@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FileText, BarChart, Clock, LogOut, User, Trophy, Target, TrendingUp, Star, Calendar, Award, Download } from 'lucide-react';
+import { FileText, BarChart, Clock, LogOut, User, Trophy, Target, TrendingUp, Star, Calendar, Award, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import FullScreenTestInterface from './FullScreenTestInterface';
+import DetailedTestResult from './DetailedTestResult';
 
 interface StudentDashboardProps {
   onLogout: () => void;
@@ -27,6 +28,8 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState('tests');
   const [selectedTest, setSelectedTest] = useState<any>(null);
+  const [selectedResultTest, setSelectedResultTest] = useState<any>(null);
+  const [selectedResult, setSelectedResult] = useState<any>(null);
   const navigate = useNavigate();
 
   const averageScore = studentResults.length > 0 
@@ -35,33 +38,6 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
 
   const completedTests = studentResults.length;
   const availableTests = tests.length;
-
-  const exportTestResults = (testId: string) => {
-    const test = tests.find(t => t.id === testId);
-    const result = studentResults.find(r => r.test_id === testId);
-    
-    if (!result) return;
-    
-    const csvContent = [
-      ['Test Title', 'Student Name', 'Score', 'Total Questions', 'Correct Answers', 'Completion Date'].join(','),
-      [
-        test?.title || 'Unknown Test',
-        studentName,
-        `${result.score}%`,
-        result.total_questions,
-        result.correct_answers,
-        new Date(result.completed_at).toLocaleDateString()
-      ].join(',')
-    ].join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${test?.title || 'test'}-my-result.csv`;
-    a.click();
-    window.URL.revokeObjectURL(url);
-  };
 
   // Group results by test
   const resultsByTest = tests.map(test => {
@@ -75,6 +51,11 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
 
   const completedResultsByTest = resultsByTest.filter(item => item.hasCompleted);
 
+  const handleViewTestResult = (test: any, result: any) => {
+    setSelectedResultTest(test);
+    setSelectedResult(result);
+  };
+
   if (selectedTest) {
     return (
       <FullScreenTestInterface
@@ -85,6 +66,20 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
         }}
         onBack={() => setSelectedTest(null)}
         studentName={studentName}
+      />
+    );
+  }
+
+  if (selectedResult && selectedResultTest) {
+    return (
+      <DetailedTestResult
+        result={selectedResult}
+        test={selectedResultTest}
+        studentName={studentName}
+        onBack={() => {
+          setSelectedResult(null);
+          setSelectedResultTest(null);
+        }}
       />
     );
   }
@@ -326,12 +321,12 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
                               </CardDescription>
                             </div>
                             <Button 
-                              onClick={() => exportTestResults(test.id)}
-                              className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white border-0 modern-shadow hover-lift"
+                              onClick={() => handleViewTestResult(test, result)}
+                              className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white border-0 modern-shadow hover-lift"
                               size="sm"
                             >
-                              <Download size={14} />
-                              Export
+                              <Eye size={14} />
+                              View Details
                             </Button>
                           </div>
                         </CardHeader>
