@@ -44,7 +44,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({
           onSubmitTest(selectedTest.id, answers);
           setSelectedTest(null);
         }}
-        onCancel={() => setSelectedTest(null)}
+        onBack={() => setSelectedTest(null)}
       />
     );
   }
