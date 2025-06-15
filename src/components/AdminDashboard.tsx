@@ -34,6 +34,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState('overview');
   const [showTestCreator, setShowTestCreator] = useState(false);
+  const [editingTest, setEditingTest] = useState<any>(null);
   const navigate = useNavigate();
   const { profile } = useAuth();
 
@@ -41,6 +42,28 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const averageScore = testResults.length > 0 
     ? testResults.reduce((acc, result) => acc + result.score, 0) / testResults.length 
     : 0;
+
+  const handleEditTest = (test: any) => {
+    setEditingTest(test);
+    setShowTestCreator(true);
+  };
+
+  const handleViewTestResults = (testId: string) => {
+    setActiveTab('results');
+    // The TestResults component will handle filtering by test when we pass the testId
+  };
+
+  const handleCloseTestCreator = () => {
+    setShowTestCreator(false);
+    setEditingTest(null);
+  };
+
+  const handleUpdateTest = (updatedTest: any) => {
+    // For now, we'll treat this as creating a new test
+    // In a real implementation, you'd want to have an onUpdateTest prop
+    onCreateTest(updatedTest);
+    setEditingTest(null);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
@@ -203,8 +226,22 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                           Status: <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium proper-line-height">Published</span>
                         </span>
                         <div className="flex gap-2">
-                          <Button variant="outline" size="sm" className="border-purple-200 text-purple-600 hover:bg-purple-50 proper-line-height">Edit</Button>
-                          <Button variant="outline" size="sm" className="border-blue-200 text-blue-600 hover:bg-blue-50 proper-line-height">View Results</Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="border-purple-200 text-purple-600 hover:bg-purple-50 proper-line-height"
+                            onClick={() => handleEditTest(test)}
+                          >
+                            Edit
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="border-blue-200 text-blue-600 hover:bg-blue-50 proper-line-height"
+                            onClick={() => handleViewTestResults(test.id)}
+                          >
+                            View Results
+                          </Button>
                         </div>
                       </div>
                     </CardContent>
@@ -235,8 +272,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
       {showTestCreator && (
         <TestCreator
-          onClose={() => setShowTestCreator(false)}
-          onCreateTest={onCreateTest}
+          onClose={handleCloseTestCreator}
+          onCreateTest={editingTest ? handleUpdateTest : onCreateTest}
+          initialTest={editingTest}
         />
       )}
     </div>
