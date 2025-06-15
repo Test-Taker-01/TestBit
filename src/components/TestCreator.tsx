@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -11,6 +10,7 @@ import { Plus, Trash2, Image, Save, X, Clock } from 'lucide-react';
 interface TestCreatorProps {
   onClose: () => void;
   onCreateTest: (test: any) => void;
+  initialTest?: any;
 }
 
 interface Question {
@@ -22,7 +22,7 @@ interface Question {
   correctAnswer: number;
 }
 
-const TestCreator: React.FC<TestCreatorProps> = ({ onClose, onCreateTest }) => {
+const TestCreator: React.FC<TestCreatorProps> = ({ onClose, onCreateTest, initialTest }) => {
   const [testTitle, setTestTitle] = useState('');
   const [testSubject, setTestSubject] = useState('');
   const [testDuration, setTestDuration] = useState('30'); // in minutes
@@ -34,6 +34,16 @@ const TestCreator: React.FC<TestCreatorProps> = ({ onClose, onCreateTest }) => {
     correctAnswer: 0,
     imageFormat: 'jpeg'
   });
+
+  // Load initial test data when editing
+  useEffect(() => {
+    if (initialTest) {
+      setTestTitle(initialTest.title || '');
+      setTestSubject(initialTest.subject || '');
+      setTestDuration(initialTest.duration?.toString() || '30');
+      setQuestions(initialTest.questions || []);
+    }
+  }, [initialTest]);
 
   const addQuestion = () => {
     if (currentQuestion.question && currentQuestion.options.every(opt => opt.trim())) {
@@ -89,15 +99,15 @@ const TestCreator: React.FC<TestCreatorProps> = ({ onClose, onCreateTest }) => {
   const createTest = () => {
     if (testTitle && questions.length > 0 && testDuration) {
       const newTest = {
-        id: Date.now().toString(),
+        id: initialTest?.id || Date.now().toString(),
         title: testTitle,
         subject: testSubject,
         duration: parseInt(testDuration),
         questions: questions,
-        createdAt: new Date().toISOString(),
+        createdAt: initialTest?.createdAt || new Date().toISOString(),
         isPublished: true
       };
-      console.log('Creating test:', newTest);
+      console.log('Creating/updating test:', newTest);
       onCreateTest(newTest);
       onClose();
     } else {
@@ -109,7 +119,7 @@ const TestCreator: React.FC<TestCreatorProps> = ({ onClose, onCreateTest }) => {
     <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Create New Test</DialogTitle>
+          <DialogTitle>{initialTest ? 'Edit Test' : 'Create New Test'}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
@@ -332,7 +342,7 @@ const TestCreator: React.FC<TestCreatorProps> = ({ onClose, onCreateTest }) => {
                 className="flex items-center gap-2"
               >
                 <Save size={16} />
-                Create Test ({questions.length} questions)
+                {initialTest ? 'Update Test' : 'Create Test'} ({questions.length} questions)
               </Button>
             </div>
           </div>
